@@ -1,3 +1,12 @@
+/* TAILWIND CSS IMPORTS - Tailwind is a utility-first CSS framework */
+/* These imports load Tailwind's pre-built CSS classes into our project */
+
+/* Base styles - Normalizes browser defaults and provides basic styling */
 @tailwind base;
+
+/* Component classes - Pre-built component styles that can be customized */
 @tailwind components;
+
+/* Utility classes - Small, single-purpose classes like 'text-center', 'bg-blue-500' */
+/* These are the classes you'll use most often in your JSX className attributes */
 @tailwind utilities;

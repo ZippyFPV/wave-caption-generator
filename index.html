@@ -1,13 +1,30 @@
+<!-- HTML5 DOCTYPE - Tells the browser this is modern HTML5 -->
 <!doctype html>
+<!-- HTML root element with language attribute for accessibility and SEO -->
 <html lang="en">
   <head>
+    <!-- CHARACTER ENCODING - UTF-8 supports all international characters -->
     <meta charset="UTF-8" />
+    
+    <!-- FAVICON - Small icon that appears in browser tabs -->
+    <!-- Vite provides this SVG icon by default -->
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    
+    <!-- RESPONSIVE META TAG - Essential for mobile-responsive design -->
+    <!-- Tells mobile browsers not to zoom out to fit wide content -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + React</title>
+    
+    <!-- PAGE TITLE - Appears in browser tab and search results -->
+    <title>Wave Caption Generator - Create Ocean Wave Art for Print-on-Demand</title>
   </head>
   <body>
+    <!-- ROOT CONTAINER - This is where React will render our entire application -->
+    <!-- The id="root" matches the getElementById("root") call in main.jsx -->
     <div id="root"></div>
+    
+    <!-- SCRIPT TAG - Loads our React application -->
+    <!-- type="module" enables ES6 module imports -->
+    <!-- src points to our main JavaScript entry point -->
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

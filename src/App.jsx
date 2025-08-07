@@ -1,45 +1,64 @@
+// Import React and the useState hook for managing component state
+// React is a library for building user interfaces with reusable components
+// useState is a React Hook that lets you add state to functional components
 import React, { useState } from "react";
+
+// Import Material-UI components for building a beautiful, consistent UI
+// Material-UI provides pre-built React components following Google's Material Design
 import {
-  Container,
-  Typography,
-  Button,
-  Card,
-  CardContent,
-  CardMedia,
-  CardActions,
-  Grid,
-  Box,
-  Alert,
-  CircularProgress,
-  Chip,
-  Paper,
-  Fab,
-  Modal,
-  Backdrop,
-  IconButton,
+  Container, // Provides consistent max-width and centering
+  Typography, // For text elements (h1, h2, p, etc.) with consistent styling
+  Button, // Interactive button component with Material Design styling
+  Card, CardContent, CardMedia, CardActions, // Card components for displaying content
+  Grid, // Responsive grid system for layouts
+  Box, // Flexible container component for custom layouts
+  Alert, // For displaying error/warning/info messages
+  CircularProgress, // Loading spinner component
+  Chip, // Small elements for tags, labels, or status indicators
+  Paper, // Container with Material Design elevation/shadow
+  Fab, // Floating Action Button
+  Modal, Backdrop, // For modal dialogs and overlays
+  IconButton, // Button designed specifically for icons
 } from "@mui/material";
+
+// Import Material-UI icons - these are React components that render SVG icons
 import {
-  Download,
-  CloudDownload,
-  Refresh,
-  Warning,
-  PhotoCamera,
-  Close,
-  ZoomIn,
+  Download, // Download icon for download buttons
+  CloudDownload, // Cloud download icon for bulk download
+  Refresh, // Refresh/reload icon for fetching new images
+  Warning, // Warning icon for error messages
+  PhotoCamera, // Camera icon for empty state
+  Close, // X icon for closing modals
+  ZoomIn, // Magnifying glass icon for zooming images
 } from "@mui/icons-material";
 
+// Define our main React component as a functional component
+// Arrow function syntax is modern JavaScript - equivalent to: function WaveCaptionGenerator() {}
 const WaveCaptionGenerator = () => {
-  const [images, setImages] = useState([]);
-  const [processedImages, setProcessedImages] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [selectedImage, setSelectedImage] = useState(null);
-  const [modalOpen, setModalOpen] = useState(false);
+  // STATE MANAGEMENT WITH REACT HOOKS
+  // useState() is a React Hook that lets you add state to functional components
+  // It returns an array: [currentValue, setterFunction]
+  // The setter function triggers a re-render when called with a new value
+  
+  const [images, setImages] = useState([]); // Store original images from Pexels API
+  const [processedImages, setProcessedImages] = useState([]); // Store images with added captions
+  const [loading, setLoading] = useState(false); // Boolean to show/hide loading spinner
+  const [error, setError] = useState(""); // String to store error messages
+  const [selectedImage, setSelectedImage] = useState(null); // Currently selected image for modal view
+  const [modalOpen, setModalOpen] = useState(false); // Boolean to control modal visibility
 
-  // Get API key from Vite environment variables
+  // ENVIRONMENT VARIABLES
+  // Vite (our build tool) provides environment variables through import.meta.env
+  // VITE_ prefix is required for Vite to expose the variable to client-side code
+  // This API key should be stored in a .env file in the project root
   const apiKey = import.meta.env.VITE_PEXELS_API_KEY;
 
+  // DATA ARRAYS - These are JavaScript arrays stored in memory
+  // Arrays are zero-indexed lists of items, accessed with array[index]
+  
   // Caption variations - Massive collection for accessibility compliance and variety
+  // These provide alt-text descriptions for hearing-impaired users
+  // JavaScript arrays can hold any type of data (strings, numbers, objects, etc.)
   const captions = [
     "[Wave crashing]",
     "[Waves crashing]",
@@ -202,6 +221,8 @@ const WaveCaptionGenerator = () => {
   ];
 
   // SEO-optimized names that are both searchable and funny
+  // SEO = Search Engine Optimization - these titles help products appear in searches
+  // This array provides pre-written product titles optimized for search engines
   const seoOptimizedNames = [
     "Ocean Wave Wall Art - Monday Morning Motivation Print",
     "Blue Wave Photography - Stress Relief Office Decor",
@@ -225,62 +246,74 @@ const WaveCaptionGenerator = () => {
     "Blue Wave Poster - Therapeutic Wall Decor",
   ];
 
+  // UTILITY FUNCTION - Functions that perform specific tasks and can be reused
   // File-safe versions for downloads (SEO + URL friendly)
+  // This function takes a title and converts it to a web-friendly filename
   const generateSEOFilename = (title, index) => {
     return (
       title
-        .toLowerCase()
-        .replace(/[^a-z0-9\s-]/g, "") // Remove special chars
-        .replace(/\s+/g, "-") // Replace spaces with hyphens
+        .toLowerCase() // Convert to lowercase (standard for web URLs)
+        .replace(/[^a-z0-9\s-]/g, "") // Remove special characters using regex
+        .replace(/\s+/g, "-") // Replace all spaces with hyphens
         .replace(/-+/g, "-") // Remove duplicate hyphens
-        .trim() + `_${index + 1}`
+        .trim() + `_${index + 1}` // Add index number to ensure unique filenames
     );
+    // Example: "Ocean Wave Art!" becomes "ocean-wave-art_1"
   };
 
+  // ASYNC FUNCTION - Functions that perform asynchronous operations (API calls, file operations)
+  // 'async' keyword allows us to use 'await' inside the function
+  // This function fetches images from the Pexels API
   const fetchImages = async () => {
+    // INPUT VALIDATION - Always check inputs before processing
     if (!apiKey) {
       setError("Please add your Pexels API key to the .env file");
-      return;
+      return; // Exit early if no API key
     }
 
+    // UPDATE STATE - Set loading to true to show spinner, clear any previous errors
     setLoading(true);
     setError("");
     console.log("Starting to fetch images from Pexels...");
 
     try {
-      // Fetch multiple pages to get more images
+      // PARALLEL API REQUESTS - Fetch multiple pages simultaneously for better performance
+      // Promise.all() runs multiple async operations at the same time
       const promises = [];
       for (let page = 1; page <= 3; page++) {
         promises.push(
-          fetch(
+          fetch( // fetch() is the modern way to make HTTP requests in JavaScript
             `https://api.pexels.com/v1/search?query=ocean waves crashing&per_page=15&page=${page}`,
             {
-              method: "GET",
-              headers: {
-                Authorization: apiKey,
-                Accept: "application/json",
+              method: "GET", // HTTP method (GET = retrieve data)
+              headers: { // HTTP headers provide metadata about the request
+                Authorization: apiKey, // API authentication
+                Accept: "application/json", // Tell server we want JSON response
               },
             },
           ),
         );
       }
 
+      // AWAIT - Wait for all requests to complete before continuing
       const responses = await Promise.all(promises);
 
-      // Check if any requests failed
+      // ERROR HANDLING - Check if any HTTP requests failed
       for (let response of responses) {
-        if (!response.ok) {
+        if (!response.ok) { // .ok is false for 400+ status codes
           throw new Error(`HTTP error! status: ${response.status}`);
         }
       }
 
+      // PARSE JSON - Convert response text to JavaScript objects
       const data = await Promise.all(responses.map((res) => res.json()));
+      // flatMap() flattens nested arrays into a single array
       const allImages = data.flatMap((d) => d.photos || []);
 
       console.log(`Fetched ${allImages.length} images from Pexels`);
-      setImages(allImages);
+      setImages(allImages); // Update state with fetched images
 
-      // Process images with captions
+      // FUNCTION COMPOSITION - Call another function to process the images
       await processImagesWithCaptions(allImages);
     } catch (error) {
       console.error("Detailed error:", error);
@@ -347,13 +380,19 @@ const WaveCaptionGenerator = () => {
     setProcessedImages(processed);
   };
 
+  // CANVAS API FUNCTION - HTML5 Canvas allows us to draw and manipulate images
+  // This function takes an image URL and caption, returns a Promise with the modified image
   const addCaptionToImage = (imageUrl, caption) => {
+    // PROMISE PATTERN - Wrap asynchronous operations in a Promise for better error handling
     return new Promise((resolve, reject) => {
       console.log("Processing image:", imageUrl, "with caption:", caption);
 
+      // HTML IMAGE ELEMENT - Create a new image element to load the source image
       const img = new Image();
-      img.crossOrigin = "anonymous";
+      // CORS (Cross-Origin Resource Sharing) - Allow loading images from other domains
+      img.crossOrigin = "anonymous"; // Required for Canvas manipulation of external images
 
+      // EVENT HANDLER - Function that runs when image successfully loads
       img.onload = () => {
         try {
           console.log(
@@ -363,106 +402,125 @@ const WaveCaptionGenerator = () => {
             img.height,
           );
 
+          // HTML5 CANVAS - Create a canvas element for image manipulation
           const canvas = document.createElement("canvas");
-          const ctx = canvas.getContext("2d");
+          const ctx = canvas.getContext("2d"); // Get 2D drawing context
 
-          // Ensure minimum canvas size
+          // CANVAS SIZING - Ensure minimum dimensions for quality
           canvas.width = Math.max(img.width, 800);
           canvas.height = Math.max(img.height, 600);
 
-          // Draw the original image
+          // DRAW IMAGE - Copy the original image onto the canvas
+          // drawImage(source, destX, destY, destWidth, destHeight)
           ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-          // Set up text styling with enhanced visibility
-          const fontSize = Math.max(32, canvas.width * 0.03);
-          ctx.font = `bold ${fontSize}px Arial, sans-serif`;
-          ctx.textAlign = "center";
-          ctx.textBaseline = "middle";
+          // TEXT STYLING - Configure how text will appear
+          const fontSize = Math.max(32, canvas.width * 0.03); // Responsive font size
+          ctx.font = `bold ${fontSize}px Arial, sans-serif`; // CSS-style font declaration
+          ctx.textAlign = "center"; // Center text horizontally
+          ctx.textBaseline = "middle"; // Center text vertically
 
-          // Measure text for background
+          // TEXT MEASUREMENT - Calculate text dimensions for background sizing
           const textMetrics = ctx.measureText(caption);
           const textWidth = textMetrics.width;
-          const textHeight = fontSize * 1.4;
+          const textHeight = fontSize * 1.4; // Approximate height with line spacing
           const padding = 32;
 
-          // Calculate positions for perfect centering
+          // POSITIONING MATH - Calculate where to place text and background
           const rectWidth = textWidth + padding * 2;
           const rectHeight = textHeight + padding;
-          const rectX = (canvas.width - rectWidth) / 2;
-          const rectY = canvas.height - rectHeight - 50;
+          const rectX = (canvas.width - rectWidth) / 2; // Center horizontally
+          const rectY = canvas.height - rectHeight - 50; // Position near bottom
 
-          // Draw black background rectangle with border
-          ctx.fillStyle = "rgba(0, 0, 0, 0.9)";
+          // DRAW BACKGROUND RECTANGLE - Semi-transparent black background for text
+          ctx.fillStyle = "rgba(0, 0, 0, 0.9)"; // RGBA: Red, Green, Blue, Alpha (transparency)
           ctx.fillRect(rectX, rectY, rectWidth, rectHeight);
 
-          // Add border to make it more visible
+          // DRAW BORDER - Add white border around text background
           ctx.strokeStyle = "rgba(255, 255, 255, 0.3)";
           ctx.lineWidth = 2;
           ctx.strokeRect(rectX, rectY, rectWidth, rectHeight);
 
-          // Draw yellow text with enhanced shadow
-          ctx.fillStyle = "#FFFF00";
-          ctx.shadowColor = "rgba(0, 0, 0, 1)";
-          ctx.shadowOffsetX = 3;
-          ctx.shadowOffsetY = 3;
-          ctx.shadowBlur = 6;
+          // TEXT SHADOW - Add drop shadow for better readability
+          ctx.fillStyle = "#FFFF00"; // Bright yellow text
+          ctx.shadowColor = "rgba(0, 0, 0, 1)"; // Black shadow
+          ctx.shadowOffsetX = 3; // Shadow offset right
+          ctx.shadowOffsetY = 3; // Shadow offset down
+          ctx.shadowBlur = 6; // Shadow blur radius
 
+          // DRAW TEXT - Render the caption text
           ctx.fillText(caption, canvas.width / 2, rectY + rectHeight / 2);
 
-          // Reset shadow
+          // RESET SHADOW - Clear shadow settings to avoid affecting other drawing
           ctx.shadowColor = "transparent";
           ctx.shadowOffsetX = 0;
           ctx.shadowOffsetY = 0;
           ctx.shadowBlur = 0;
 
           console.log("Caption added successfully to image");
-          const dataURL = canvas.toDataURL("image/jpeg", 0.92);
-          resolve(dataURL);
+          // EXPORT CANVAS - Convert canvas to base64 data URL for download
+          const dataURL = canvas.toDataURL("image/jpeg", 0.92); // 92% quality
+          resolve(dataURL); // Fulfill the Promise with the processed image
         } catch (error) {
           console.error("Canvas processing error:", error);
-          // Return original image if processing fails
+          // FALLBACK - Return original image if processing fails
           resolve(imageUrl);
         }
       };
 
+      // ERROR HANDLER - Function that runs if image fails to load
       img.onerror = (error) => {
         console.error("Image load error for URL:", imageUrl, error);
-        // Return original image if load fails
+        // GRACEFUL FAILURE - Return original image instead of throwing error
         resolve(imageUrl);
       };
 
-      // Add timeout to prevent hanging
+      // TIMEOUT PROTECTION - Prevent infinite waiting for slow-loading images
       setTimeout(() => {
-        if (!img.complete) {
+        if (!img.complete) { // Check if image is still loading
           console.warn("Image load timeout for:", imageUrl);
-          resolve(imageUrl);
+          resolve(imageUrl); // Return original image after timeout
         }
-      }, 10000);
+      }, 10000); // 10 second timeout
 
+      // START IMAGE LOADING - Setting src triggers the download
       img.src = imageUrl;
     });
   };
 
+  // DOWNLOAD FUNCTION - Programmatically trigger file downloads in the browser
+  // Uses the HTML5 download attribute to save files locally
   const downloadImage = (imageData, fileName) => {
+    // CREATE ANCHOR ELEMENT - Invisible link element for downloading
     const link = document.createElement("a");
-    link.download = `${fileName}.jpg`;
-    link.href = imageData;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    link.download = `${fileName}.jpg`; // Set filename for download
+    link.href = imageData; // Set the data URL as the link destination
+    
+    // DOM MANIPULATION - Temporarily add link to page, click it, then remove it
+    document.body.appendChild(link); // Add to DOM (required for Firefox)
+    link.click(); // Programmatically click the link to trigger download
+    document.body.removeChild(link); // Clean up - remove from DOM
   };
 
+  // BULK DOWNLOAD FUNCTION - Download multiple images with delays to avoid browser blocking
   const downloadAllImages = () => {
+    // ARRAY ITERATION - forEach() loops through each item in an array
     processedImages.forEach((image, index) => {
+      // SETTIMEOUT - Delay execution to prevent browser from blocking multiple downloads
       setTimeout(() => {
         const seoFilename = generateSEOFilename(image.name, index);
         downloadImage(image.processed, seoFilename);
-      }, index * 100); // Small delay between downloads
+      }, index * 100); // Staggered delay: 0ms, 100ms, 200ms, etc.
     });
   };
 
+  // JSX RETURN - This is what the component renders to the screen
+  // JSX is a syntax extension that allows you to write HTML-like code in JavaScript
+  // React transforms JSX into JavaScript function calls
   return (
+    {/* MAIN CONTAINER - Full height container with background styling */}
     <Box sx={{ minHeight: "100vh", bgcolor: "background.default", py: 4 }}>
+      {/* RESPONSIVE CONTAINER - Centers content and provides responsive max-widths */}
       <Container maxWidth="xl">
         <Box textAlign="center" mb={6}>
           <Typography

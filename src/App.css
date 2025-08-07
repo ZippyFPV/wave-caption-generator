@@ -1,42 +1,57 @@
+/* APP-SPECIFIC CSS STYLES */
+/* This file contains styles specific to our React application */
+/* Note: We're primarily using Material-UI for styling, so this file has minimal content */
+
+/* ROOT CONTAINER - Styles for the main app container */
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  max-width: 1280px; /* Maximum width to prevent content from being too wide on large screens */
+  margin: 0 auto; /* Center the container horizontally (0 top/bottom, auto left/right) */
+  padding: 2rem; /* Add space around the content (rem units are relative to font size) */
+  text-align: center; /* Center-align text within the container */
 }
 
+/* LOGO STYLES - For any logo elements in the app */
 .logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+  height: 6em; /* Height in em units (relative to font size) */
+  padding: 1.5em; /* Space around the logo */
+  will-change: filter; /* Optimize for filter animations */
+  transition: filter 300ms; /* Smooth transition for filter effects */
 }
 
+/* HOVER EFFECTS - Visual feedback when users hover over elements */
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa); /* Blue glow effect on hover */
+}
+
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa); /* React blue glow effect */
+}
+
+/* CSS ANIMATIONS - Keyframes define animation steps */
 @keyframes logo-spin {
   from {
-    transform: rotate(0deg);
+    transform: rotate(0deg); /* Start at 0 degrees rotation */
   }
   to {
-    transform: rotate(360deg);
+    transform: rotate(360deg); /* End at full rotation */
   }
 }
 
+/* ACCESSIBILITY - Respect user's motion preferences */
+/* Only animate if user hasn't requested reduced motion */
 @media (prefers-reduced-motion: no-preference) {
   a:nth-of-type(2) .logo {
+    /* Apply spinning animation: infinite duration, 20s per spin, linear timing */
     animation: logo-spin infinite 20s linear;
   }
 }
 
+/* COMPONENT STYLES - Basic styling for card-like elements */
 .card {
-  padding: 2em;
+  padding: 2em; /* Internal spacing */
 }
 
+/* TEXT STYLES - Muted text color for less important content */
 .read-the-docs {
-  color: #888;
+  color: #888; /* Gray color using hexadecimal notation */
 }
