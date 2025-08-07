@@ -384,7 +384,7 @@ const WaveCaptionGenerator = () => {
   // This function takes an image URL and caption, returns a Promise with the modified image
   const addCaptionToImage = (imageUrl, caption) => {
     // PROMISE PATTERN - Wrap asynchronous operations in a Promise for better error handling
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       console.log("Processing image:", imageUrl, "with caption:", caption);
 
       // HTML IMAGE ELEMENT - Create a new image element to load the source image
@@ -518,7 +518,7 @@ const WaveCaptionGenerator = () => {
   // JSX is a syntax extension that allows you to write HTML-like code in JavaScript
   // React transforms JSX into JavaScript function calls
   return (
-    {/* MAIN CONTAINER - Full height container with background styling */}
+    // MAIN CONTAINER - Full height container with background styling
     <Box sx={{ minHeight: "100vh", bgcolor: "background.default", py: 4 }}>
       {/* RESPONSIVE CONTAINER - Centers content and provides responsive max-widths */}
       <Container maxWidth="xl">
