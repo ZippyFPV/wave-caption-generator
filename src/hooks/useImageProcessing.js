@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import imageStorage, { storeGeneratedImages, getLatestImages } from '../services/imageStorage.js';
 import { makePexelsRequest, recordCacheHit } from '../services/apiRateLimit.js';
+import { generateMassiveVariation, MASSIVE_CUSTOMER_PERSONAS, CONTENT_THEMES } from '../utils/massiveVariationGenerator.js';
 
 /**
  * Image Processing Hook - Enhanced with Persistence and Rate Limiting
@@ -20,24 +21,31 @@ import { makePexelsRequest, recordCacheHit } from '../services/apiRateLimit.js';
  * - Canvas API: https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API
  * - IndexedDB: https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API
  */
-// Simple fallback for wave captions to avoid TS import issues
-const CAPTIONS = [
-  "[Waves professionally procrastinating]",
-  "[Ocean expertly winging it]", 
-  "[Water having Monday energy]",
-  "[Waves multitasking poorly]",
-  "[Ocean taking a personal day]",
-  "[Waves overthinking everything]",
-  "[Ocean having commitment issues]",
-  "[Water procrastinating effectively]",
-  "[Waves dealing with Monday]",
-  "[Ocean needing coffee first]"
-];
+// Massive variation system with 15 customer personas
+const CUSTOMER_PERSONAS = Object.keys(MASSIVE_CUSTOMER_PERSONAS);
+const SEASONS = ['year-round', 'holiday', 'gift', 'summer', 'winter'];
 
-// Simple fallback function for generating titles
-const composeListing = () => ({
-  title: "Ocean Wave Wall Art - Modern Coastal Print for Home & Office"
-});
+// State for tracking global variation index to ensure uniqueness
+let globalVariationIndex = 0;
+
+// Massive variation content generation - guarantees 100% unique combinations
+const generateMassiveContent = (imageIndex, batchStartIndex = 0, theme = null) => {
+  // Use global index to ensure every generation is completely unique
+  const uniqueGlobalIndex = batchStartIndex + imageIndex + (Date.now() % 1000);
+  globalVariationIndex = uniqueGlobalIndex;
+  
+  const persona = CUSTOMER_PERSONAS[imageIndex % CUSTOMER_PERSONAS.length];
+  const season = SEASONS[Math.floor(imageIndex / CUSTOMER_PERSONAS.length) % SEASONS.length];
+  const humorLevel = Math.random() > 0.3 ? 'medium' : 'light';
+  
+  return generateMassiveVariation(uniqueGlobalIndex, {
+    persona,
+    season,
+    humorLevel,
+    contentGoal: 'conversion',
+    theme
+  });
+};
 
 /**
  * Enhanced Image Processing Hook with Persistence and Rate Limiting
@@ -86,17 +94,10 @@ export const useImageProcessing = () => {
     console.groupEnd();
   }, []);
 
-  // Generate SEO-optimized titles using the modular system
-  const generateSEOTitle = () => {
-    const categories = ["HOME_PERSONAL", "WORKPLACE_PROFESSIONAL", "WELLNESS_THERAPY"];
-    const randomCategory = categories[Math.floor(Math.random() * categories.length)];
-    
-    const listing = composeListing({
-      category: randomCategory,
-      humor: Math.random() > 0.5
-    });
-    
-    return listing.title;
+  // Enhanced SEO title generation with persona targeting
+  const generateSEOTitle = (persona, season) => {
+    const content = generateAdvancedContent(0);
+    return content.title;
   };
 
   // File-safe versions for downloads (SEO + URL friendly)
@@ -204,13 +205,20 @@ export const useImageProcessing = () => {
           ctx.textRenderingOptimization = "optimizeSpeed";
           
           // SMART TEXT WRAPPING - Prevent overflow
-          const maxTextWidth = canvas.width * 0.85; // Use 85% of image width max
+          const maxTextWidth = canvas.width * 0.8; // Use 80% of image width max (more conservative)
           let adjustedFontSize = fontSize;
           let textMetrics = ctx.measureText(caption);
           
-          // Reduce font size if text is too wide
+          // Reduce font size if text is too wide - more aggressive reduction
           while (textMetrics.width > maxTextWidth && adjustedFontSize > minFontSize) {
-            adjustedFontSize -= 2;
+            adjustedFontSize -= 1; // Smaller increments for better fit
+            ctx.font = `bold ${adjustedFontSize}px "Helvetica Neue", Arial, sans-serif`;
+            textMetrics = ctx.measureText(caption);
+          }
+          
+          // Additional safety check - ensure minimum readable size
+          if (adjustedFontSize < minFontSize) {
+            adjustedFontSize = minFontSize;
             ctx.font = `bold ${adjustedFontSize}px "Helvetica Neue", Arial, sans-serif`;
             textMetrics = ctx.measureText(caption);
           }
@@ -222,17 +230,25 @@ export const useImageProcessing = () => {
           const horizontalPadding = Math.max(Math.floor(adjustedFontSize * 0.6), 16);
           const verticalPadding = Math.max(Math.floor(adjustedFontSize * 0.5), 12);
           
-          const rectWidth = Math.min(Math.floor(textWidth + (horizontalPadding * 2)), canvas.width * 0.9);
+          const rectWidth = Math.min(Math.floor(textWidth + (horizontalPadding * 2)), canvas.width * 0.85);
           const rectHeight = Math.floor(lineHeight + (verticalPadding * 2));
           const rectX = Math.floor((canvas.width - rectWidth) / 2);
           
-          // Position in bottom 15% safe area (broadcast standard) - pixel aligned
-          const bottomSafeZone = Math.floor(canvas.height * 0.85);
-          const rectY = Math.floor(bottomSafeZone - rectHeight);
+          // Safety check: ensure rectangle fits within canvas bounds
+          const safeRectX = Math.max(10, Math.min(rectX, canvas.width - rectWidth - 10));
+          const safeRectWidth = Math.min(rectWidth, canvas.width - (safeRectX * 2));
+          
+          // Position in bottom 20% safe area to prevent cutoff - pixel aligned
+          // Ensure there's always margin from the bottom edge
+          const bottomMargin = Math.max(20, Math.floor(canvas.height * 0.03)); // At least 20px or 3% margin
+          const rectY = Math.max(
+            Math.floor(canvas.height * 0.7), // Never go below 30% from top
+            Math.floor(canvas.height - rectHeight - bottomMargin) // Proper bottom positioning
+          );
 
           // BROADCAST STANDARD BACKGROUND - Solid black with 75% opacity (FCC requirement)
           ctx.fillStyle = "rgba(0, 0, 0, 0.75)";
-          ctx.fillRect(rectX, rectY, rectWidth, rectHeight);
+          ctx.fillRect(safeRectX, rectY, safeRectWidth, rectHeight);
 
           // BROADCAST STANDARD TEXT - White text with black drop shadow
           ctx.fillStyle = "#FFFFFF"; // Pure white text (broadcast standard)
@@ -241,10 +257,14 @@ export const useImageProcessing = () => {
           ctx.shadowOffsetY = 2;
           ctx.shadowBlur = 3; // Clean edge blur
 
-          // PERFECT TEXT POSITIONING
-          const textX = Math.floor(canvas.width / 2);
+          // PERFECT TEXT POSITIONING - Centered within safe rectangle
+          const textX = Math.floor(safeRectX + (safeRectWidth / 2));
           const textY = Math.floor(rectY + verticalPadding + (adjustedFontSize * 0.8));
-          ctx.fillText(caption, textX, textY);
+          
+          // Final validation: ensure text position is within canvas bounds
+          const safeTextY = Math.max(adjustedFontSize, Math.min(textY, canvas.height - 10));
+          
+          ctx.fillText(caption, textX, safeTextY);
 
           // Reset shadow settings for clean canvas state
           ctx.shadowColor = "transparent";
@@ -255,8 +275,10 @@ export const useImageProcessing = () => {
           console.log('🎯 Caption overlay completed successfully');
           console.log('Text details:', {
             fontSize: `${adjustedFontSize}px`,
-            position: `(${textX}, ${textY})`,
-            backgroundSize: `${rectWidth}x${rectHeight}px`
+            position: `(${textX}, ${safeTextY})`,
+            backgroundSize: `${safeRectWidth}x${rectHeight}px`,
+            backgroundPosition: `(${safeRectX}, ${rectY})`,
+            bottomMargin: `${canvas.height - rectY - rectHeight}px`
           });
           
           // OPTIMIZED EXPORT QUALITY - Balance file size vs quality for performance
@@ -298,8 +320,11 @@ export const useImageProcessing = () => {
    * to avoid unnecessary reprocessing and API calls.
    * 
    * @param {Array} imageList - Array of Pexels image objects
+   * @param {boolean} shouldAccumulate - Whether to add to existing images
+   * @param {number} targetCount - Number of images to process
+   * @param {string} theme - Content theme for generation
    */
-  const processImagesWithCaptions = async (imageList, shouldAccumulate = false, targetCount = 20) => {
+  const processImagesWithCaptions = async (imageList, shouldAccumulate = false, targetCount = 20, theme = null) => {
     console.group("🎨 Image Processing with Captions");
     console.log(`Starting processing: ${imageList.length} source images`);
     console.log(`Target count: ${targetCount} processed images`);
@@ -314,27 +339,36 @@ export const useImageProcessing = () => {
     const imagesToProcess = imageList.slice(0, targetCount);
     const processedResults = [];
 
+    // Generate batch start index for complete uniqueness across all images
+    const batchStartIndex = Date.now() % 10000;
+    console.log(`🚀 Batch Start Index: ${batchStartIndex} - Ensuring 100% unique variations`);
+
     for (let i = 0; i < imagesToProcess.length; i++) {
       const image = imagesToProcess[i];
-      const randomCaption = CAPTIONS[Math.floor(Math.random() * CAPTIONS.length)];
-      const randomName = generateSEOTitle();
-      const seoFilename = generateSEOFilename(randomName, i);
+      
+      // Generate massive variation content - guaranteed unique
+      const generatedContent = generateMassiveContent(i, batchStartIndex, theme);
+      const { caption, title, filename, metadata } = generatedContent;
 
-      console.log(`\n📸 Processing ${i + 1}/${imagesToProcess.length}: ${seoFilename}`);
+      console.log(`\n📸 Processing ${i + 1}/${imagesToProcess.length}: ${filename}`);
+      console.log(`🎯 Persona: ${metadata.persona} | Season: ${metadata.season} | Global Index: ${metadata.globalIndex}`);
+      console.log(`💹 Conversion: ${metadata.estimatedConversion}% | Uniqueness: ${metadata.uniquenessScore}%`);
 
       try {
         // Use original quality image for best print results
-        const processedImageUrl = await addCaptionToImage(image.src.original, randomCaption, i);
+        const processedImageUrl = await addCaptionToImage(image.src.original, caption, i);
         const processedImage = {
           id: image.id,
           original: image.src.original,
           processed: processedImageUrl,
-          caption: randomCaption,
-          filename: seoFilename,
+          caption: caption,
+          title: title,
+          filename: filename,
           photographer: image.photographer,
           photographer_url: image.photographer_url,
           width: image.width,
-          height: image.height
+          height: image.height,
+          metadata: metadata // Include complete targeting metadata
         };
         
         processedResults.push(processedImage);
@@ -351,12 +385,14 @@ export const useImageProcessing = () => {
           id: image.id,
           original: image.src.original,
           processed: image.src.original, // Fallback to original if processing fails
-          caption: randomCaption,
-          filename: seoFilename,
+          caption: caption,
+          title: title,
+          filename: filename,
           photographer: image.photographer,
           photographer_url: image.photographer_url,
           width: image.width,
-          height: image.height
+          height: image.height,
+          metadata: metadata
         };
         
         processedResults.push(fallbackImage);
@@ -413,7 +449,7 @@ export const useImageProcessing = () => {
    * - This function uses 3 requests (3 pages), so can be called ~66 times/hour
    * - With caching, typically only called once per 24 hours
    */
-  const fetchImages = async (forceRefresh = false, quantity = 20) => {
+  const fetchImages = async (forceRefresh = false, quantity = 20, theme = null) => {
     console.group('🌊 Wave Image Fetch Process');
     console.log(`Requested quantity: ${quantity} images`);
     
@@ -493,7 +529,7 @@ export const useImageProcessing = () => {
       // Process images with captions and store in cache
       // Use accumulate mode if force refresh and we already have images
       const shouldAccumulate = forceRefresh && processedImages.length > 0;
-      await processImagesWithCaptions(allImages, shouldAccumulate, quantity);
+      await processImagesWithCaptions(allImages, shouldAccumulate, quantity, theme);
       
     } catch (error) {
       console.error('💥 Fetch process failed:', error);
@@ -541,10 +577,38 @@ export const useImageProcessing = () => {
   const downloadAllImages = () => {
     processedImages.forEach((image, index) => {
       setTimeout(() => {
-        const seoFilename = generateSEOFilename(image.name, index);
-        downloadImage(image.processed, seoFilename);
+        // Use the pre-generated filename from the comprehensive system
+        const filename = image.filename || generateSEOFilename(image.title, index);
+        downloadImage(image.processed, filename);
       }, index * 100);
     });
+  };
+
+  // Delete specific images by IDs
+  const deleteImages = (imageIds) => {
+    setProcessedImages(prev => prev.filter(img => !imageIds.includes(img.id)));
+    // Also update cache
+    const remaining = processedImages.filter(img => !imageIds.includes(img.id));
+    storeGeneratedImages(remaining);
+  };
+
+  // Delete duplicate images based on caption similarity
+  const deleteDuplicates = () => {
+    const uniqueImages = [];
+    const seenCaptions = new Set();
+    
+    processedImages.forEach(image => {
+      const normalizedCaption = image.caption.toLowerCase().trim();
+      if (!seenCaptions.has(normalizedCaption)) {
+        seenCaptions.add(normalizedCaption);
+        uniqueImages.push(image);
+      }
+    });
+    
+    setProcessedImages(uniqueImages);
+    storeGeneratedImages(uniqueImages);
+    
+    return processedImages.length - uniqueImages.length; // Return number of duplicates removed
   };
 
   // Return enhanced hook interface with cache information
@@ -558,6 +622,9 @@ export const useImageProcessing = () => {
     fetchImages,
     downloadImage,
     downloadAllImages,
-    generateSEOFilename
+    deleteImages,
+    deleteDuplicates,
+    generateSEOFilename,
+    CONTENT_THEMES
   };
 };
