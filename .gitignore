@@ -12,6 +12,10 @@ dist
 dist-ssr
 *.local
 
+# Additional security - build artifacts
+build
+*.bundle.js
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
