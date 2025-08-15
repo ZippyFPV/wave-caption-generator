@@ -327,14 +327,14 @@ ${personalConnection}${practicalInfo}`;
         const humanTitle = generateHumanTitle(image, i);
         const humanDescription = generateHumanDescription(image);
         
-        // Create product with uploaded image
+        // Create product with uploaded image using Printify's exact specifications
         const productData = {
           title: humanTitle,
           description: humanDescription,
-          blueprint_id: 97, // Satin Posters
+          blueprint_id: 97, // Satin Posters (210gsm)
           print_provider_id: 99, // Printify Choice
           variants: [{
-            id: 33742, // 14″ x 11″
+            id: 33742, // 14″ x 11″ landscape (4200x3300px required)
             price: 1999, // $19.99
             is_enabled: true
           }],
@@ -344,9 +344,9 @@ ${personalConnection}${practicalInfo}`;
               position: "front",
               images: [{
                 id: uploadResult.id,
-                x: 0.5,
-                y: 0.5,
-                scale: 1,
+                x: 0.5, // Center horizontally
+                y: 0.5, // Center vertically  
+                scale: 1, // Full scale - our image is exactly 4200x3300 to match Printify specs
                 angle: 0
               }]
             }]

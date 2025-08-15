@@ -141,12 +141,12 @@ export const useImageProcessing = () => {
           const canvas = document.createElement("canvas");
           const ctx = canvas.getContext("2d");
 
-          // PRINTIFY OPTIMAL DIMENSIONS: Target specific aspect ratios for print products
-          // Standard poster sizes: 16:20 ratio (4:5) - portrait orientation
-          // This matches Printify's poster variants like 16"x20", 12"x15", etc.
-          const printAspectRatio = 4 / 5; // width:height = 4:5 (portrait)
-          const printWidth = 2400; // High quality for print
-          const printHeight = Math.round(printWidth / printAspectRatio); // 3000px
+          // PRINTIFY EXACT SPECIFICATIONS: Match Printify's design requirements
+          // 14″ x 11″ Satin Poster variant (ID: 33742) requires exactly 4200x3300 pixels
+          // Aspect ratio: 14:11 = 1.273 (landscape orientation)
+          const printAspectRatio = 14 / 11; // width:height = 14:11 (landscape)
+          const printWidth = 4200; // Printify's exact requirement
+          const printHeight = 3300; // Printify's exact requirement
           
           // CROP TO FIT PRINT ASPECT RATIO: Ensure no white space
           let cropX = 0;
@@ -172,7 +172,7 @@ export const useImageProcessing = () => {
           
           console.log('Canvas dimensions:', `${canvas.width}x${canvas.height}px`);
           console.log('Crop area:', `${cropWidth}x${cropHeight}px at (${cropX}, ${cropY})`);
-          console.log('Print aspect ratio:', printAspectRatio.toFixed(3), '(4:5 portrait)');
+          console.log('Print aspect ratio:', printAspectRatio.toFixed(3), '(14:11 landscape for Printify)');
 
           // HIGH-QUALITY RENDERING SETTINGS
           ctx.imageSmoothingEnabled = true;
