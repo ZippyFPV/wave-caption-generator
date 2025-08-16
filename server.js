@@ -14,6 +14,7 @@ import FormData from 'form-data';
 import fetch from 'node-fetch';
 import fs from 'fs';
 import path from 'path';
+import { createCanvas, loadImage } from 'canvas';
 import { config } from 'dotenv';
 
 config();
@@ -59,6 +60,127 @@ app.get('/health', (req, res) => {
     timestamp: new Date().toISOString(),
     shopId: SHOP_ID 
   });
+});
+
+// Image processing endpoint for automation
+app.post('/api/process-image', async (req, res) => {
+  try {
+    const { imageUrl, caption, width = 4200, height = 3300 } = req.body;
+    
+    console.log(`🎨 Processing image: ${imageUrl} with caption: "${caption}"`);
+    
+    // Load the original image
+    const image = await loadImage(imageUrl);
+    
+    // Create canvas with Printify specifications
+    const canvas = createCanvas(width, height);
+    const ctx = canvas.getContext('2d');
+    
+    // Fill background with white (in case image doesn't fill)
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillRect(0, 0, width, height);
+    
+    // Professional image scaling following rule of thirds for ocean waves
+    const imageAspect = image.width / image.height;
+    const canvasAspect = width / height;
+    
+    let drawWidth, drawHeight, drawX, drawY;
+    
+    if (imageAspect > canvasAspect) {
+      // Image is wider than canvas - fit to height and crop sides intelligently
+      drawHeight = height;
+      drawWidth = height * imageAspect;
+      
+      // Rule of thirds: Position horizon line at 1/3 or 2/3 if possible
+      // For ocean waves, prefer showing more water (bottom 2/3)
+      const cropAmount = drawWidth - width;
+      const leftCrop = cropAmount * 0.4; // Slightly left of center for better composition
+      drawX = -leftCrop;
+    } else {
+      // Image is taller than canvas - fit to width and preserve horizon
+      drawWidth = width;
+      drawHeight = width / imageAspect;
+      
+      // Rule of thirds: For ocean scenes, position horizon at upper or lower third
+      // Prefer showing waves in lower 2/3 of frame
+      const cropAmount = drawHeight - height;
+      const topCrop = cropAmount * 0.25; // Crop mostly from top to preserve wave action
+      drawY = -topCrop;
+    }
+    
+    // Draw the image
+    ctx.drawImage(image, drawX, drawY, drawWidth, drawHeight);
+    
+    // Add caption overlay
+    if (caption) {
+      // Clean caption for display (remove brackets)
+      const displayCaption = caption.replace(/[\[\]]/g, '').trim();
+      
+      // Dynamic font sizing based on canvas width and text length
+      const baseSize = Math.floor(width * 0.04); // 4% of width for better proportion
+      const minSize = Math.max(40, width * 0.015); // Minimum size scales with canvas
+      const maxSize = Math.min(120, width * 0.06); // Maximum size to prevent oversized text
+      
+      // Adjust font size based on text length for optimal readability
+      let fontSize = baseSize;
+      if (displayCaption.length > 40) fontSize = Math.max(minSize, baseSize * 0.85);
+      if (displayCaption.length > 60) fontSize = Math.max(minSize, baseSize * 0.75);
+      fontSize = Math.min(fontSize, maxSize);
+      
+      // Set up text styling
+      ctx.font = `bold ${fontSize}px Arial, sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      
+      // Calculate text dimensions for background
+      const textMetrics = ctx.measureText(displayCaption);
+      const textWidth = textMetrics.width;
+      const textHeight = fontSize;
+      
+      // Smart positioning: avoid critical image areas
+      const textX = width / 2;
+      let textY = height * 0.82; // Lower position for better composition
+      
+      // Draw semi-transparent background
+      const padding = 40;
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+      ctx.fillRect(
+        textX - textWidth / 2 - padding,
+        textY - textHeight / 2 - padding / 2,
+        textWidth + padding * 2,
+        textHeight + padding
+      );
+      
+      // High-contrast text with subtle shadow
+      // Text shadow for better readability
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+      ctx.fillText(displayCaption, textX + 2, textY + 2);
+      
+      // Main text in bright, readable gold
+      ctx.fillStyle = '#FFD700'; // Gold color for premium feel
+      ctx.fillText(displayCaption, textX, textY);
+    }
+    
+    // Convert to base64
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+    
+    const processedImageData = {
+      dataUrl,
+      width,
+      height,
+      caption,
+      originalUrl: imageUrl,
+      processed: true,
+      timestamp: Date.now()
+    };
+    
+    console.log(`✅ Image processed successfully: ${width}x${height} with caption overlay`);
+    res.json(processedImageData);
+    
+  } catch (error) {
+    console.error('❌ Image processing failed:', error.message);
+    res.status(500).json({ error: error.message });
+  }
 });
 
 // Test endpoint to get real blueprint and provider info
@@ -274,18 +396,34 @@ app.post('/api/printify/create-product', async (req, res) => {
     try {
       console.log(`📢 Auto-publishing product ${product.id} to Shopify...`);
       
-      const publishResponse = await fetch(`${PRINTIFY_API_BASE}/shops/${SHOP_ID}/products/${product.id}/publishing_succeeded.json`, {
+      // First, let's try the correct Printify publish endpoint
+      const publishPayload = {
+        title: true,
+        description: true,
+        images: true,
+        variants: true,
+        tags: true,
+        keyFeatures: true,
+        shipping_template: true
+      };
+      
+      const publishResponse = await fetch(`${PRINTIFY_API_BASE}/shops/${SHOP_ID}/products/${product.id}/publish.json`, {
         method: 'POST',
-        headers: headers
+        headers: headers,
+        body: JSON.stringify(publishPayload)
       });
       
       if (publishResponse.ok) {
+        const publishResult = await publishResponse.json();
         console.log(`✅ Product auto-published successfully: ${product.id}`);
+        console.log('📋 Publish response:', JSON.stringify(publishResult, null, 2));
         product.published = true;
+        product.publishResult = publishResult;
       } else {
-        console.warn(`⚠️ Auto-publish failed for ${product.id}, manual publishing required`);
+        const errorText = await publishResponse.text();
+        console.warn(`⚠️ Auto-publish failed for ${product.id}:`, publishResponse.status, errorText);
         product.published = false;
-        product.publishNote = 'Requires manual publishing in Printify dashboard';
+        product.publishNote = `Publish failed: ${publishResponse.status} - ${errorText}`;
       }
     } catch (publishError) {
       console.warn(`⚠️ Auto-publish error for ${product.id}:`, publishError.message);
@@ -388,6 +526,102 @@ app.get('/api/printify/products', async (req, res) => {
     
   } catch (error) {
     console.error('❌ Failed to list products:', error.message);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Delete product from Printify
+app.delete('/api/printify/products/:productId', async (req, res) => {
+  try {
+    const { productId } = req.params;
+    console.log(`🗑️ Deleting product from Printify: ${productId}`);
+    
+    const response = await fetch(`${PRINTIFY_API_BASE}/shops/${SHOP_ID}/products/${productId}.json`, {
+      method: 'DELETE',
+      headers: headers
+    });
+    
+    if (!response.ok) {
+      const error = await response.text();
+      throw new Error(`Failed to delete product: ${response.status} ${error}`);
+    }
+    
+    console.log(`✅ Product deleted successfully: ${productId}`);
+    res.json({ success: true, message: 'Product deleted successfully' });
+    
+  } catch (error) {
+    console.error('❌ Failed to delete product:', error.message);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Bulk delete products from Printify
+app.post('/api/printify/products/bulk-delete', async (req, res) => {
+  try {
+    const { productIds, confirmPhrase } = req.body;
+    
+    // Safety check - require confirmation phrase
+    if (confirmPhrase !== 'DELETE ALL LISTINGS') {
+      return res.status(400).json({ 
+        error: 'Invalid confirmation phrase. Please provide "DELETE ALL LISTINGS" to confirm bulk deletion.' 
+      });
+    }
+    
+    if (!productIds || !Array.isArray(productIds) || productIds.length === 0) {
+      return res.status(400).json({ error: 'No product IDs provided' });
+    }
+    
+    console.log(`🗑️ Starting bulk deletion of ${productIds.length} products...`);
+    
+    const results = [];
+    let deletedCount = 0;
+    let failedCount = 0;
+    
+    // Delete products one by one with rate limiting
+    for (let i = 0; i < productIds.length; i++) {
+      const productId = productIds[i];
+      
+      try {
+        console.log(`🗑️ Deleting product ${i + 1}/${productIds.length}: ${productId}`);
+        
+        const response = await fetch(`${PRINTIFY_API_BASE}/shops/${SHOP_ID}/products/${productId}.json`, {
+          method: 'DELETE',
+          headers: headers
+        });
+        
+        if (response.ok) {
+          results.push({ productId, success: true, message: 'Deleted successfully' });
+          deletedCount++;
+          console.log(`✅ Deleted: ${productId}`);
+        } else {
+          const error = await response.text();
+          results.push({ productId, success: false, error: `${response.status}: ${error}` });
+          failedCount++;
+          console.log(`❌ Failed to delete ${productId}: ${response.status}`);
+        }
+        
+        // Rate limiting - wait 100ms between deletions
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
+      } catch (error) {
+        results.push({ productId, success: false, error: error.message });
+        failedCount++;
+        console.log(`❌ Error deleting ${productId}:`, error.message);
+      }
+    }
+    
+    console.log(`🏁 Bulk deletion completed: ${deletedCount} deleted, ${failedCount} failed`);
+    
+    res.json({
+      success: true,
+      totalRequested: productIds.length,
+      deleted: deletedCount,
+      failed: failedCount,
+      results: results
+    });
+    
+  } catch (error) {
+    console.error('❌ Bulk deletion failed:', error.message);
     res.status(500).json({ error: error.message });
   }
 });
@@ -538,6 +772,40 @@ app.post('/api/printify/test-product', async (req, res) => {
     
   } catch (error) {
     console.error('❌ Test product creation failed:', error.message);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Pexels API proxy endpoint for automation
+app.get('/api/pexels/search', async (req, res) => {
+  try {
+    const { query, per_page = 1, page = 1 } = req.query;
+    
+    if (!process.env.VITE_PEXELS_API_KEY) {
+      return res.status(500).json({ error: 'Pexels API key not configured' });
+    }
+    
+    console.log(`🖼️ Fetching Pexels images: query="${query}", page=${page}, per_page=${per_page}`);
+    
+    const pexelsUrl = `https://api.pexels.com/v1/search?query=${encodeURIComponent(query)}&per_page=${per_page}&page=${page}`;
+    
+    const response = await fetch(pexelsUrl, {
+      headers: {
+        'Authorization': process.env.VITE_PEXELS_API_KEY
+      }
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Pexels API failed: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    console.log(`✅ Pexels returned ${data.photos?.length || 0} photos`);
+    
+    res.json(data);
+    
+  } catch (error) {
+    console.error('❌ Pexels API proxy failed:', error.message);
     res.status(500).json({ error: error.message });
   }
 });
