@@ -60,6 +60,12 @@ import { useImageProcessing } from '../hooks/useImageProcessing';
 // Tab configuration with status tracking
 const WORKFLOW_TABS = [
   { 
+    id: 'dashboard', 
+    label: 'Dashboard', 
+    icon: Assessment, 
+    color: '#6B73FF' // Indigo
+  },
+  { 
     id: 'generate', 
     label: 'Generate Images', 
     icon: Waves, 
@@ -96,7 +102,9 @@ const STATUS_INDICATORS = {
   ready: { icon: CheckCircle, color: '#4CAF50', label: 'Ready' },
   processing: { icon: Warning, color: '#FF9800', label: 'Processing' },
   error: { icon: Error, color: '#F44336', label: 'Error' },
-  inactive: { icon: Pause, color: '#9E9E9E', label: 'Not Started' }
+  inactive: { icon: Pause, color: '#9E9E9E', label: 'Not Started' },
+  checking: { icon: Warning, color: '#FF9800', label: 'Checking' },
+  connected: { icon: CheckCircle, color: '#4CAF50', label: 'Connected' }
 };
 
 const WorkflowWaveApp = () => {
@@ -114,6 +122,7 @@ const WorkflowWaveApp = () => {
   // Workflow state
   const [currentTab, setCurrentTab] = useState(0);
   const [tabStatuses, setTabStatuses] = useState({
+    dashboard: 'ready',
     generate: 'inactive',
     review: 'inactive', 
     listings: 'inactive',
@@ -146,6 +155,12 @@ const WorkflowWaveApp = () => {
   // Dialogs
   const [editDialog, setEditDialog] = useState(null);
   const [systemCheckDialog, setSystemCheckDialog] = useState(false);
+  
+  // Phrase refinement state
+  const [approvedPhrases, setApprovedPhrases] = useState([]);
+  const [rejectedPhrases, setRejectedPhrases] = useState([]);
+  const [showPhraseHistory, setShowPhraseHistory] = useState(false);
+  const [editingPhrase, setEditingPhrase] = useState(null);
   
   // Listing creation state
   const [creatingListings, setCreatingListings] = useState(false);
@@ -186,9 +201,49 @@ const WorkflowWaveApp = () => {
     setTabStatuses(newStatuses);
   }, [processedImages, loading, error, approvedImages]);
 
+  // Phrase refinement handlers
+  const handlePhraseApproval = (imageId, action) => {
+    const image = processedImages.find(img => img.id === imageId);
+    if (!image) return;
+    
+    const phraseData = {
+      phrase: image.caption,
+      imageId: imageId,
+      theme: image.metadata?.theme,
+      persona: image.metadata?.persona,
+      timestamp: new Date().toISOString()
+    };
+    
+    if (action === 'approve') {
+      setApprovedPhrases(prev => [...prev.filter(p => p.imageId !== imageId), phraseData]);
+      setRejectedPhrases(prev => prev.filter(p => p.imageId !== imageId));
+    } else if (action === 'reject') {
+      setRejectedPhrases(prev => [...prev.filter(p => p.imageId !== imageId), phraseData]);
+      setApprovedPhrases(prev => prev.filter(p => p.imageId !== imageId));
+    }
+  };
+
+  const handlePhraseEdit = (imageId) => {
+    const image = processedImages.find(img => img.id === imageId);
+    if (!image) return;
+    
+    setEditingPhrase({
+      imageId: imageId,
+      currentPhrase: image.caption,
+      originalPhrase: image.caption
+    });
+  };
+
   // Status indicator component
   const StatusIndicator = ({ status, size = 'small' }) => {
     const statusConfig = STATUS_INDICATORS[status];
+    
+    // Safety check for missing status
+    if (!statusConfig) {
+      console.warn(`Unknown status: ${status}`);
+      return <Warning sx={{ color: '#FF9800', fontSize: size === 'large' ? 24 : 16 }} />;
+    }
+    
     const IconComponent = statusConfig.icon;
     
     return (
@@ -427,6 +482,118 @@ ${personalConnection}${practicalInfo}`;
     </Paper>
   );
 
+  // Dashboard Tab
+  const DashboardTab = () => (
+    <Box>
+      <Typography variant="h5" gutterBottom sx={{ color: '#6B73FF', fontWeight: 'bold' }}>
+        📊 Wave Commerce Dashboard
+      </Typography>
+      
+      <Grid container spacing={3}>
+        {/* Key Metrics */}
+        <Grid item xs={12} md={8}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>📈 Performance Metrics</Typography>
+              <Grid container spacing={2}>
+                <Grid item xs={6} sm={3}>
+                  <Paper sx={{ p: 2, textAlign: 'center', bgcolor: '#E3F2FD' }}>
+                    <Typography variant="h4" sx={{ color: '#1976D2', fontWeight: 'bold' }}>
+                      {imageStats.totalGenerated}
+                    </Typography>
+                    <Typography variant="caption">Total Generated</Typography>
+                  </Paper>
+                </Grid>
+                <Grid item xs={6} sm={3}>
+                  <Paper sx={{ p: 2, textAlign: 'center', bgcolor: '#FFF3E0' }}>
+                    <Typography variant="h4" sx={{ color: '#F57C00', fontWeight: 'bold' }}>
+                      {imageStats.currentActive}
+                    </Typography>
+                    <Typography variant="caption">Active Images</Typography>
+                  </Paper>
+                </Grid>
+                <Grid item xs={6} sm={3}>
+                  <Paper sx={{ p: 2, textAlign: 'center', bgcolor: '#E8F5E8' }}>
+                    <Typography variant="h4" sx={{ color: '#388E3C', fontWeight: 'bold' }}>
+                      {imageStats.approved}
+                    </Typography>
+                    <Typography variant="caption">Approved</Typography>
+                  </Paper>
+                </Grid>
+                <Grid item xs={6} sm={3}>
+                  <Paper sx={{ p: 2, textAlign: 'center', bgcolor: '#F3E5F5' }}>
+                    <Typography variant="h4" sx={{ color: '#7B1FA2', fontWeight: 'bold' }}>
+                      {imageStats.created}
+                    </Typography>
+                    <Typography variant="caption">Products Created</Typography>
+                  </Paper>
+                </Grid>
+              </Grid>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        {/* System Status */}
+        <Grid item xs={12} md={4}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>🔧 System Status</Typography>
+              <Stack spacing={2}>
+                <Stack direction="row" justifyContent="space-between" alignItems="center">
+                  <Typography>Pexels API</Typography>
+                  <StatusIndicator status={systemStatus.pexelsApi} />
+                </Stack>
+                <Stack direction="row" justifyContent="space-between" alignItems="center">
+                  <Typography>Printify API</Typography>
+                  <StatusIndicator status={systemStatus.printifyApi} />
+                </Stack>
+                <Stack direction="row" justifyContent="space-between" alignItems="center">
+                  <Typography>Server</Typography>
+                  <StatusIndicator status={systemStatus.serverConnection} />
+                </Stack>
+              </Stack>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        {/* Quick Actions */}
+        <Grid item xs={12}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>⚡ Quick Actions</Typography>
+              <Stack direction="row" spacing={2}>
+                <Button
+                  variant="contained"
+                  startIcon={<Waves />}
+                  onClick={() => setCurrentTab(1)}
+                  disabled={loading}
+                >
+                  Generate Images
+                </Button>
+                <Button
+                  variant="outlined"
+                  startIcon={<Visibility />}
+                  onClick={() => setCurrentTab(2)}
+                  disabled={imageStats.currentActive === 0}
+                >
+                  Review Images ({imageStats.currentActive})
+                </Button>
+                <Button
+                  variant="outlined"
+                  startIcon={<Store />}
+                  onClick={() => setCurrentTab(3)}
+                  disabled={imageStats.approved === 0}
+                >
+                  Create Listings ({imageStats.approved})
+                </Button>
+              </Stack>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
+    </Box>
+  );
+
   // Generate Images Tab
   const GenerateTab = () => (
     <Box>
@@ -538,9 +705,35 @@ ${personalConnection}${practicalInfo}`;
                           />
                         </Box>
                         <Box sx={{ p: 1 }}>
-                          <Typography variant="caption" display="block" noWrap>
-                            {image.caption}
+                          <Typography variant="caption" display="block" sx={{ fontSize: '0.7rem', mb: 0.5 }}>
+                            "{image.caption}"
                           </Typography>
+                          <Stack direction="row" spacing={0.5}>
+                            <IconButton 
+                              size="small" 
+                              color="success"
+                              onClick={() => handlePhraseApproval(image.id, 'approve')}
+                              sx={{ p: 0.25 }}
+                            >
+                              <CheckCircle sx={{ fontSize: 12 }} />
+                            </IconButton>
+                            <IconButton 
+                              size="small" 
+                              color="error"
+                              onClick={() => handlePhraseApproval(image.id, 'reject')}
+                              sx={{ p: 0.25 }}
+                            >
+                              <Error sx={{ fontSize: 12 }} />
+                            </IconButton>
+                            <IconButton 
+                              size="small" 
+                              color="primary"
+                              onClick={() => handlePhraseEdit(image.id)}
+                              sx={{ p: 0.25 }}
+                            >
+                              <Edit sx={{ fontSize: 12 }} />
+                            </IconButton>
+                          </Stack>
                         </Box>
                       </Card>
                     </Grid>
@@ -551,6 +744,33 @@ ${personalConnection}${practicalInfo}`;
                     Showing 6 most recent. See all {processedImages.length} in Review tab.
                   </Typography>
                 )}
+                
+                {/* Phrase Quality Control Panel */}
+                <Card sx={{ mt: 2, bgcolor: '#F8F9FA' }}>
+                  <CardContent sx={{ py: 2 }}>
+                    <Typography variant="subtitle2" gutterBottom>
+                      🎯 Phrase Quality Control
+                    </Typography>
+                    <Stack direction="row" spacing={2} alignItems="center" flexWrap="wrap">
+                      <Typography variant="caption">
+                        ✅ Approved: <strong>{approvedPhrases.length}</strong>
+                      </Typography>
+                      <Typography variant="caption">
+                        ❌ Rejected: <strong>{rejectedPhrases.length}</strong>
+                      </Typography>
+                      <Typography variant="caption">
+                        📊 Success Rate: <strong>{processedImages.length > 0 ? Math.round((approvedPhrases.length / processedImages.length) * 100) : 0}%</strong>
+                      </Typography>
+                      <Button 
+                        size="small" 
+                        variant="outlined"
+                        onClick={() => setShowPhraseHistory(!showPhraseHistory)}
+                      >
+                        {showPhraseHistory ? 'Hide' : 'View'} History
+                      </Button>
+                    </Stack>
+                  </CardContent>
+                </Card>
               </CardContent>
             </Card>
           )}
@@ -929,12 +1149,13 @@ ${personalConnection}${practicalInfo}`;
   // Tab content renderer
   const renderTabContent = () => {
     switch (currentTab) {
-      case 0: return <GenerateTab />;
-      case 1: return <ReviewTab />;
-      case 2: return <ListingsTab />;
-      case 3: return <PublishTab />;
-      case 4: return <AutomationTab />;
-      default: return <GenerateTab />;
+      case 0: return <DashboardTab />;
+      case 1: return <GenerateTab />;
+      case 2: return <ReviewTab />;
+      case 3: return <ListingsTab />;
+      case 4: return <PublishTab />;
+      case 5: return <AutomationTab />;
+      default: return <DashboardTab />;
     }
   };
 
@@ -987,9 +1208,9 @@ ${personalConnection}${practicalInfo}`;
                     </Stack>
                   }
                   sx={{
-                    bgcolor: index === 4 ? '#FFEBEE' : 'transparent', // Red background for emergency tab
+                    bgcolor: index === 5 ? '#FFEBEE' : 'transparent', // Red background for emergency tab
                     '&.Mui-selected': {
-                      bgcolor: index === 4 ? '#FFCDD2' : '#E3F2FD'
+                      bgcolor: index === 5 ? '#FFCDD2' : '#E3F2FD'
                     }
                   }}
                 />

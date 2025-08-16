@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import imageStorage, { storeGeneratedImages, getLatestImages } from '../services/imageStorage.js';
 import { makePexelsRequest, recordCacheHit } from '../services/apiRateLimit.js';
 import { generateMassiveVariation, MASSIVE_CUSTOMER_PERSONAS, CONTENT_THEMES } from '../utils/massiveVariationGenerator.js';
+import { generateCaptionPhrase } from '../utils/phraseComponents.js';
 
 /**
  * Image Processing Hook - Enhanced with Persistence and Rate Limiting
@@ -348,7 +349,11 @@ export const useImageProcessing = () => {
       
       // Generate massive variation content - guaranteed unique
       const generatedContent = generateMassiveContent(i, batchStartIndex, theme);
-      const { caption, title, filename, metadata } = generatedContent;
+      const { title, filename, metadata } = generatedContent;
+      
+      // Generate wave-describing closed caption phrase
+      const waveSize = Math.random() > 0.7 ? 'big' : Math.random() > 0.3 ? 'small' : 'medium';
+      const caption = generateCaptionPhrase(waveSize, metadata.persona, theme);
 
       console.log(`\n📸 Processing ${i + 1}/${imagesToProcess.length}: ${filename}`);
       console.log(`🎯 Persona: ${metadata.persona} | Season: ${metadata.season} | Global Index: ${metadata.globalIndex}`);

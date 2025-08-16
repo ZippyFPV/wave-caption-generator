@@ -270,6 +270,29 @@ app.post('/api/printify/create-product', async (req, res) => {
     const product = await response.json();
     console.log(`✅ Product created successfully: ${product.id}`);
     
+    // Automatically publish to Shopify store
+    try {
+      console.log(`📢 Auto-publishing product ${product.id} to Shopify...`);
+      
+      const publishResponse = await fetch(`${PRINTIFY_API_BASE}/shops/${SHOP_ID}/products/${product.id}/publishing_succeeded.json`, {
+        method: 'POST',
+        headers: headers
+      });
+      
+      if (publishResponse.ok) {
+        console.log(`✅ Product auto-published successfully: ${product.id}`);
+        product.published = true;
+      } else {
+        console.warn(`⚠️ Auto-publish failed for ${product.id}, manual publishing required`);
+        product.published = false;
+        product.publishNote = 'Requires manual publishing in Printify dashboard';
+      }
+    } catch (publishError) {
+      console.warn(`⚠️ Auto-publish error for ${product.id}:`, publishError.message);
+      product.published = false;
+      product.publishNote = 'Auto-publish failed, manual publishing required';
+    }
+    
     res.json(product);
     
   } catch (error) {
