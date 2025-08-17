@@ -10,7 +10,7 @@ import {
   Button,
   Tooltip
 } from '@mui/material';
-import { Waves, Visibility, Store, Warning, CheckCircle } from '@mui/icons-material';
+import { Waves, Visibility, Store, Warning, CheckCircle, Error, Pause } from '@mui/icons-material';
 
 const STATUS_INDICATORS = {
   ready: { icon: CheckCircle, color: '#4CAF50', label: 'Ready' },
