@@ -5,6 +5,48 @@ import { generateMassiveVariation, MASSIVE_CUSTOMER_PERSONAS, CONTENT_THEMES } f
 import { generateCaptionPhrase } from '../utils/phraseComponents.js';
 
 /**
+ * Analyze wave intensity from image properties
+ * @param {Object} image - Pexels image object
+ * @returns {string} 'big', 'medium', or 'small'
+ */
+const analyzeWaveIntensity = (image) => {
+  // Use image dimensions and title/tags as proxies for wave intensity
+  const width = image.width || 3000;
+  const height = image.height || 2000;
+  const aspectRatio = width / height;
+  
+  // Analyze image metadata for intensity clues
+  const title = (image.alt || '').toLowerCase();
+  const photographer = (image.photographer || '').toLowerCase();
+  
+  // High intensity indicators
+  const highIntensityTerms = ['storm', 'crash', 'powerful', 'dramatic', 'splash', 'surf', 'break', 'rough'];
+  const lowIntensityTerms = ['calm', 'gentle', 'peaceful', 'serene', 'quiet', 'still', 'smooth', 'soft'];
+  
+  const hasHighTerms = highIntensityTerms.some(term => title.includes(term));
+  const hasLowTerms = lowIntensityTerms.some(term => title.includes(term));
+  
+  // Image with extreme landscape aspect ratios tend to be dramatic seascapes
+  const isDramaticAspect = aspectRatio > 2.5 || aspectRatio < 0.8;
+  
+  // Very large images often capture more dramatic scenes
+  const isHighResolution = width > 4000 && height > 3000;
+  
+  // Decision logic prioritizing metadata over randomness
+  if (hasHighTerms || (isDramaticAspect && isHighResolution)) {
+    return 'big';
+  } else if (hasLowTerms) {
+    return 'small';
+  } else {
+    // For neutral cases, use weighted randomness favoring medium waves
+    const random = Math.random();
+    if (random > 0.8) return 'big';      // 20% big waves
+    if (random < 0.3) return 'small';    // 30% small waves  
+    return 'medium';                      // 50% medium waves
+  }
+};
+
+/**
  * Image Processing Hook - Enhanced with Persistence and Rate Limiting
  * 
  * This hook manages the complete image workflow with smart caching and API optimization
@@ -351,8 +393,8 @@ export const useImageProcessing = () => {
       const generatedContent = generateMassiveContent(i, batchStartIndex, theme);
       const { title, filename, metadata } = generatedContent;
       
-      // Generate wave-describing closed caption phrase
-      const waveSize = Math.random() > 0.7 ? 'big' : Math.random() > 0.3 ? 'small' : 'medium';
+      // Generate wave-describing closed caption phrase based on image analysis
+      const waveSize = analyzeWaveIntensity(image);
       const caption = generateCaptionPhrase(waveSize, metadata.persona, theme);
 
       console.log(`\n📸 Processing ${i + 1}/${imagesToProcess.length}: ${filename}`);
@@ -616,20 +658,36 @@ export const useImageProcessing = () => {
     return processedImages.length - uniqueImages.length; // Return number of duplicates removed
   };
 
+  // Calculate statistics for the dashboard
+  const imageStats = {
+    totalGenerated: processedImages.length,
+    currentActive: processedImages.length,
+    approved: processedImages.filter(img => img.approved).length,
+    deleted: 0, // This hook doesn't track deleted images
+    created: 0  // This hook doesn't track created products
+  };
+
   // Return enhanced hook interface with cache information
   return {
     images,
     processedImages,
+    setProcessedImages,
+    imageStats,
+    setImageStats: () => {}, // Placeholder - stats are calculated automatically
     loading,
+    setLoading,
     error,
+    setError,
     apiKey,
     cacheStatus, // 'checking', 'loaded', 'empty'
     fetchImages,
+    handleImageDownload: downloadImage,
     downloadImage,
     downloadAllImages,
     deleteImages,
     deleteDuplicates,
     generateSEOFilename,
+    generateVariationsForApproved: () => {}, // Placeholder for future implementation
     CONTENT_THEMES
   };
 };

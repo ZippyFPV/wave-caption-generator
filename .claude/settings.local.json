@@ -3,7 +3,9 @@
     "allow": [
       "WebSearch",
       "Bash(npm run dev:*)",
-      "Bash(mkdir:*)"
+      "Bash(mkdir:*)",
+      "Bash(npm run lint)",
+      "Bash(git add:*)"
     ],
     "defaultMode": "acceptEdits"
   }
