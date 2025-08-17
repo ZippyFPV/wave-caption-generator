@@ -1,3 +1,5 @@
+import analytics from './analytics';
+
 /**
  * Customer Tracking & Heatmapping Service
  * 
@@ -234,9 +236,8 @@ export const initializeHeatmapTracking = () => {
  */
 const sendToAnalytics = (payload) => {
   try {
-    // Google Analytics 4
-    if (typeof gtag !== 'undefined') {
-      gtag('event', payload.event, {
+    // Use analytics wrapper instead of direct gtag
+    analytics.event(payload.event, {
         event_category: 'user_interaction',
         event_label: payload.eventData.elementId,
         value: payload.eventData.value || 1,
@@ -245,11 +246,9 @@ const sendToAnalytics = (payload) => {
           device_type: payload.context.deviceType
         }
       });
-    }
     
-    // Facebook Pixel
-    if (typeof fbq !== 'undefined') {
-      fbq('track', 'CustomEvent', {
+    // Use analytics wrapper instead of direct fbq
+    analytics.event('CustomEvent', {
         event_name: payload.event,
         content_category: payload.context.utmCampaign,
         content_ids: [payload.eventData.productId],

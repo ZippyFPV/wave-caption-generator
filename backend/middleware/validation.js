@@ -131,7 +131,7 @@ const sanitizeStrings = (req, res, next) => {
   const sanitizeObject = (obj) => {
     if (typeof obj === 'object' && obj !== null) {
       for (const key in obj) {
-        if (obj.hasOwnProperty(key)) {
+        if (Object.prototype.hasOwnProperty.call(obj, key)) {
           obj[key] = typeof obj[key] === 'object' ? sanitizeObject(obj[key]) : sanitizeValue(obj[key]);
         }
       }

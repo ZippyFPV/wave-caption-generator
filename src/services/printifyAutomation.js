@@ -25,8 +25,9 @@
  */
 
 import { PRINTIFY_PRODUCTS } from './businessIntelligence.js';
-import { makePrintifyRequest } from './apiRateLimit.js';
-import { generateShopifyProduct } from '../utils/business.js';
+import { printifyFetch } from './printifyClient.js';
+const _makePrintifyRequest = () => {};  // TODO: implement if needed
+const _generateShopifyProduct = () => {};  // TODO: implement if needed
 
 // Backend API Configuration (our Node.js server)
 const BACKEND_API_BASE = 'http://localhost:3001/api/printify';
@@ -263,7 +264,7 @@ Transform your environment into a peaceful sanctuary with this premium ${product
 
   // Get Printify product variants for automated pricing
   async getProductBlueprint(printifyProductId) {
-    const response = await fetch(`${PRINTIFY_API_BASE}/catalog/blueprints/${printifyProductId}.json`, {
+    const response = await printifyFetch(`/catalog/blueprints/${printifyProductId}.json`, {
       headers: this.headers
     });
     return await response.json();

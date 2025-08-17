@@ -9,12 +9,12 @@ const express = require('express');
 const router = express.Router();
 
 // Middleware
-const { asyncHandler } = require('../middleware/errorHandler');
+const { asyncHandler: _asyncHandler } = require('../middleware/errorHandler');
 const {
   validateImageUpload,
   validateProductCreation,
   validateShopPublish,
-  validateRequiredFields,
+  validateRequiredFields: _validateRequiredFields,
   sanitizeStrings,
   validateRateLimit
 } = require('../middleware/validation');

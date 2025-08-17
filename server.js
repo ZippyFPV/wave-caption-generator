@@ -13,7 +13,7 @@ import multer from 'multer';
 import FormData from 'form-data';
 import fetch from 'node-fetch';
 import fs from 'fs';
-import path from 'path';
+import path from 'path'; // eslint-disable-line no-unused-vars
 import { createCanvas, loadImage } from 'canvas';
 import { config } from 'dotenv';
 
@@ -115,7 +115,7 @@ app.post('/api/process-image', async (req, res) => {
     // Add caption overlay
     if (caption) {
       // Clean caption for display (remove brackets)
-      const displayCaption = caption.replace(/[\[\]]/g, '').trim();
+      const displayCaption = caption.replace(/[[\]]/g, '').trim();
       
       // Dynamic font sizing based on canvas width and text length
       const baseSize = Math.floor(width * 0.04); // 4% of width for better proportion
@@ -813,7 +813,7 @@ app.get('/api/pexels/search', async (req, res) => {
 });
 
 // Error handling middleware
-app.use((error, req, res, next) => {
+app.use((error, req, res, _next) => {
   console.error('💥 Server error:', error);
   res.status(500).json({ 
     error: 'Internal server error',

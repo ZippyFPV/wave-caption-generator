@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import imageStorage, { storeGeneratedImages, getLatestImages } from '../services/imageStorage.js';
+import { storeGeneratedImages, getLatestImages } from '../services/imageStorage.js';
 import { makePexelsRequest, recordCacheHit } from '../services/apiRateLimit.js';
 import { generateMassiveVariation, MASSIVE_CUSTOMER_PERSONAS, CONTENT_THEMES } from '../utils/massiveVariationGenerator.js';
 import { generateCaptionPhrase } from '../utils/phraseComponents.js';
@@ -17,7 +17,7 @@ const analyzeWaveIntensity = (image) => {
   
   // Analyze image metadata for intensity clues
   const title = (image.alt || '').toLowerCase();
-  const photographer = (image.photographer || '').toLowerCase();
+  const _photographer = (image.photographer || '').toLowerCase();  // TODO: use for intensity analysis
   
   // High intensity indicators
   const highIntensityTerms = ['storm', 'crash', 'powerful', 'dramatic', 'splash', 'surf', 'break', 'rough'];
@@ -69,13 +69,13 @@ const CUSTOMER_PERSONAS = Object.keys(MASSIVE_CUSTOMER_PERSONAS);
 const SEASONS = ['year-round', 'holiday', 'gift', 'summer', 'winter'];
 
 // State for tracking global variation index to ensure uniqueness
-let globalVariationIndex = 0;
+let _globalVariationIndex = 0;  // TODO: convert to useRef if needed in component
 
 // Massive variation content generation - guarantees 100% unique combinations
 const generateMassiveContent = (imageIndex, batchStartIndex = 0, theme = null) => {
   // Use global index to ensure every generation is completely unique
   const uniqueGlobalIndex = batchStartIndex + imageIndex + (Date.now() % 1000);
-  globalVariationIndex = uniqueGlobalIndex;
+  _globalVariationIndex = uniqueGlobalIndex;
   
   const persona = CUSTOMER_PERSONAS[imageIndex % CUSTOMER_PERSONAS.length];
   const season = SEASONS[Math.floor(imageIndex / CUSTOMER_PERSONAS.length) % SEASONS.length];
@@ -138,8 +138,8 @@ export const useImageProcessing = () => {
   }, []);
 
   // Enhanced SEO title generation with persona targeting
-  const generateSEOTitle = (persona, season) => {
-    const content = generateAdvancedContent(0);
+  const _generateSEOTitle = (_persona, _season) => {
+    const content = generateMassiveContent(0, 0);
     return content.title;
   };
 

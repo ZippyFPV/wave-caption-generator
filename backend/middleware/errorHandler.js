@@ -49,7 +49,7 @@ const isProduction = process.env.NODE_ENV === 'production';
 /**
  * Main error handling middleware
  */
-const errorHandler = (error, req, res, next) => {
+const errorHandler = (error, req, res, _next) => {
   // Log the error
   logError(error, req);
   

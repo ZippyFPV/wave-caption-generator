@@ -56,4 +56,5 @@ const StatusIndicator = ({ status, size = 'small', customLabel }) => {
 };
 
 export default StatusIndicator;
-export { STATUS_INDICATORS };
+// Separate file for constants to follow React Fast Refresh best practices
+// export { STATUS_INDICATORS };

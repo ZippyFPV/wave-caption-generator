@@ -9,7 +9,8 @@
       "Bash(node server.js)",
       "Bash(mv:*)",
       "Bash(npm install:*)",
-      "Bash(npm run test:run:*)"
+      "Bash(npm run test:run:*)",
+      "Bash(rm:*)"
     ],
     "defaultMode": "acceptEdits"
   }

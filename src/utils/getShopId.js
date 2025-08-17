@@ -1,13 +1,13 @@
 // Utility to fetch Shop ID from Printify API
 // Run this once to get your Shop ID, then add it to .env
 
-const PRINTIFY_API_BASE = 'https://api.printify.com/v1';
+import { printifyFetch } from '../services/printifyClient';
 
 export const getShopsFromAPI = async (apiToken) => {
   try {
     console.log('🔍 Fetching your shops from Printify API...');
     
-    const response = await fetch(`${PRINTIFY_API_BASE}/shops.json`, {
+    const response = await printifyFetch('/shops.json', {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${apiToken}`,

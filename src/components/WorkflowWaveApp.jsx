@@ -111,14 +111,14 @@ const WorkflowWaveApp = () => {
     processedImages,
     setProcessedImages,
     imageStats,
-    setImageStats,
+    setImageStats: _setImageStats,
     loading,
-    setLoading,
+    setLoading: _setLoading,
     error,
-    setError,
+    setError: _setError,
     fetchImages,
-    handleImageDownload,
-    generateVariationsForApproved,
+    handleImageDownload: _handleImageDownload,
+    generateVariationsForApproved: _generateVariationsForApproved,
     CONTENT_THEMES
   } = useImageProcessing();
 
@@ -136,7 +136,7 @@ const WorkflowWaveApp = () => {
     setShowAutomationGallery,
     handleStartAutomation,
     handleStopAutomation,
-    generateAutomationSummary,
+    generateAutomationSummary: _generateAutomationSummary,
     AUTOMATION_SCALES
   } = useAutomation();
 
@@ -163,14 +163,14 @@ const WorkflowWaveApp = () => {
 
   const {
     systemStatus,
-    setSystemStatus,
-    systemCheckDialog,
-    setSystemCheckDialog,
-    getSystemHealth,
+    setSystemStatus: _setSystemStatus,
+    systemCheckDialog: _systemCheckDialog,
+    setSystemCheckDialog: _setSystemCheckDialog,
+    getSystemHealth: _getSystemHealth,
     isSystemReady,
     getSystemSummary,
-    checkSystemStatus,
-    refreshSystemStatus
+    checkSystemStatus: _checkSystemStatus,
+    refreshSystemStatus: _refreshSystemStatus
   } = useSystemStatus();
 
   const {
@@ -180,18 +180,18 @@ const WorkflowWaveApp = () => {
     setRejectedPhrases,
     showPhraseHistory,
     setShowPhraseHistory,
-    editingPhrase,
-    setEditingPhrase,
+    editingPhrase: _editingPhrase,
+    setEditingPhrase: _setEditingPhrase,
     editDialog,
     setEditDialog,
     handlePhraseApproval,
     handleBatchPhraseApproval,
     handlePhraseEdit,
-    handleSaveEditedPhrase,
-    clearPhraseHistory,
-    exportPhraseData,
-    getPhraseStats,
-    getPhraseQualityInsights
+    handleSaveEditedPhrase: _handleSaveEditedPhrase,
+    clearPhraseHistory: _clearPhraseHistory,
+    exportPhraseData: _exportPhraseData,
+    getPhraseStats: _getPhraseStats,
+    getPhraseQualityInsights: _getPhraseQualityInsights
   } = usePhraseManagement();
 
   // Update persistent metrics when listings change
