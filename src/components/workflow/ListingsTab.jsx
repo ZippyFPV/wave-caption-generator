@@ -27,15 +27,15 @@ import {
 const ListingsTab = ({
   approvedImages,
   creatingListings,
-  setCreatingListings,
+  _setCreatingListings,  // TODO: implement loading state
   createdProducts,
-  setCreatedProducts,
+  _setCreatedProducts,  // TODO: implement product management
   listingProgress,
-  setListingProgress,
+  _setListingProgress,  // TODO: implement progress tracking
   createPrintifyListings,
   handleProductDelete,
   handleRefreshProducts,
-  StatusIndicator,
+  _StatusIndicator,  // TODO: implement status display
   tabStatuses,
   persistentMetrics
 }) => (

@@ -251,7 +251,12 @@ const sendToAnalytics = (payload) => {
     analytics.event('CustomEvent', {
         event_name: payload.event,
         content_category: payload.context.utmCampaign,
-        content_ids: [payload.eventData.productId],
+        content_ids: [payload.eventData.productId]
+      });
+      
+  } catch (error) {
+    console.error('Analytics tracking failed:', error);
+  }
         value: payload.eventData.value || 0,
         currency: 'USD'
       });

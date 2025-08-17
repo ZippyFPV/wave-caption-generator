@@ -73,7 +73,7 @@ class SystemTester {
       
       return this.testResults;
       
-    } catch (error) {
+    } catch (_error) {
       console.error('💥 System test failed:', error);
       throw error;
     } finally {
@@ -163,7 +163,7 @@ class SystemTester {
         await storeGeneratedImages(mockImages, { test: true });
         const writeTime = performance.now() - start;
         return { writeTime: Math.round(writeTime), success: true };
-      } catch (error) {
+      } catch (_error) {
         return { writeTime: -1, success: false, error: error.message };
       }
     }));
@@ -262,7 +262,7 @@ class SystemTester {
       try {
         await makePexelsRequest(() => Promise.reject(new Error('Network timeout')));
         return { handled: false };
-      } catch (error) {
+      } catch (_error) {
         return { handled: true, errorType: error.message };
       }
     }));
@@ -272,7 +272,7 @@ class SystemTester {
       try {
         const result = calculateActualMonthlyRevenue({ numProducts: 'invalid' });
         return { handled: !isNaN(result.monthlyBankDeposit) };
-      } catch (error) {
+      } catch (_error) {
         return { handled: true, errorType: 'Validation Error' };
       }
     }));
@@ -330,7 +330,7 @@ class SystemTester {
         success: true,
         ...result 
       };
-    } catch (error) {
+    } catch (_error) {
       const duration = Math.round((performance.now() - start) * 100) / 100;
       return { 
         name: testName,

@@ -5,7 +5,7 @@ const _noop = () => {};
 const safeCall = (fn, ...args) => {
   try {
     fn(...args);
-  } catch (_e) {
+  } catch {
     /* ignore */
   }
 };

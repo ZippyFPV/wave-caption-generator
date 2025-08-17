@@ -13,14 +13,12 @@ import multer from 'multer';
 import FormData from 'form-data';
 import fetch from 'node-fetch';
 import fs from 'fs';
-import path from 'path'; // eslint-disable-line no-unused-vars
 import { createCanvas, loadImage } from 'canvas';
-import { config } from 'dotenv';
+import config from './backend/config/index.js';
 
-config();
+const { PRINTIFY_API_BASE, PRINTIFY_TOKEN: API_TOKEN, PRINTIFY_SHOP_ID: SHOP_ID, PORT } = config;
 
 const app = express();
-const PORT = process.env.PORT || 3001;
 
 // Middleware
 app.use(cors());
@@ -33,10 +31,7 @@ const upload = multer({
   limits: { fileSize: 10 * 1024 * 1024 } // 10MB limit
 });
 
-// Printify API configuration
-const PRINTIFY_API_BASE = 'https://api.printify.com/v1';
-const API_TOKEN = process.env.VITE_PRINTIFY_API_TOKEN;
-const SHOP_ID = process.env.VITE_PRINTIFY_SHOP_ID;
+// Printify API configuration loaded from centralized config
 
 if (!API_TOKEN || !SHOP_ID) {
   console.error('❌ Missing Printify credentials in .env file');

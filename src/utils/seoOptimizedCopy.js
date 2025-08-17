@@ -346,7 +346,7 @@ const SEASONAL_MODIFIERS = {
  * Generate exactly 250 SEARCH-OPTIMIZED tags per category for maximum ranking
  * Prioritizes high-traffic, low-competition keywords that drive sales
  */
-const generateMaximumTags = (phrase, context, theme, baseTags = []) => {
+const generateMaximumTags = (phrase, context, _theme, baseTags = []) => {
   const tags = [];
   const addUniqueTag = (tag) => {
     if (!tags.includes(tag.toLowerCase())) {
@@ -362,7 +362,7 @@ const generateMaximumTags = (phrase, context, theme, baseTags = []) => {
   baseTags.forEach(tag => addUniqueTag(tag));
   
   // PRIORITY 3: Long-tail SEO goldmine (25 tags) - These rank highest!
-  const longtailGoldmine = generateLongtailGoldmine(phrase, context, theme);
+  const longtailGoldmine = generateLongtailGoldmine(phrase, context, _theme);
   longtailGoldmine.forEach(tag => addUniqueTag(tag));
   
   // PRIORITY 4: Primary high-traffic keywords (25 tags)
@@ -402,7 +402,7 @@ const generateMaximumTags = (phrase, context, theme, baseTags = []) => {
     addUniqueTag(`${word} wall art`);
   });
   
-  // PRIORITY 13: Color psychology tags (ocean themes)
+  // PRIORITY 13: Color psychology tags (ocean _themes)
   const colorTags = [
     'blue wall art', 'teal decor', 'aqua art', 'turquoise print', 'navy blue art',
     'ocean blue decor', 'deep blue wall art', 'light blue print', 'blue green art',
@@ -440,7 +440,7 @@ const generateMaximumTags = (phrase, context, theme, baseTags = []) => {
     'high quality', 'premium art', 'professional print', 'gallery quality',
     'fade resistant', 'archival quality', 'museum quality', 'artist print',
     'contemporary art', 'modern design', 'minimalist art', 'scandinavian decor',
-    'boho art', 'coastal style', 'beach house', 'nautical decor', 'ocean theme',
+    'boho art', 'coastal style', 'beach house', 'nautical decor', 'ocean _theme',
     'water decor', 'blue art', 'teal art', 'aqua decor', 'turquoise art',
     'therapeutic art', 'wellness decor', 'mindfulness art', 'meditation decor',
     'stress relief', 'anxiety relief', 'mood booster', 'positive energy',
@@ -468,7 +468,7 @@ const generateMaximumTags = (phrase, context, theme, baseTags = []) => {
   const finalTags = tags.slice(0, 250);
   
   console.log(`🏷️ Generated EXACTLY ${finalTags.length}/250 SEARCH-OPTIMIZED tags for ${context}`);
-  console.log(`🎯 Context: ${context} | Theme: ${theme} | Caption: "${phrase.substring(0, 30)}..."`);
+  console.log(`🎯 Context: ${context} | Theme: ${_theme} | Caption: "${phrase.substring(0, 30)}..."`);
   console.log(`📈 RANKING STRATEGY: Priority given to long-tail, purchase-intent, and context-specific tags`);
   
   return finalTags;
@@ -486,7 +486,7 @@ const getContextSpecificTags = (context) => {
       'small bathroom decor', 'bathroom design ideas', 'bathroom inspiration', 'toilet humor art',
       'restroom decor', 'washroom art', 'bathroom gallery wall', 'bathroom prints',
       'bathroom canvas art', 'bathroom poster', 'bathroom wall decor', 'bathroom artwork',
-      'bathroom interior design', 'bathroom styling', 'bathroom accessories', 'bathroom theme',
+      'bathroom interior design', 'bathroom styling', 'bathroom accessories', 'bathroom _theme',
       'ocean bathroom', 'coastal bathroom decor'
     ],
     office: [
@@ -504,7 +504,7 @@ const getContextSpecificTags = (context) => {
       'contemporary kitchen decor', 'farmhouse kitchen art', 'rustic kitchen decor', 'kitchen inspiration',
       'kitchen styling', 'kitchen accessories', 'dining room art', 'breakfast nook art',
       'coffee bar decor', 'kitchen gallery wall', 'kitchen prints', 'kitchen canvas',
-      'kitchen poster', 'kitchen artwork', 'kitchen interior design', 'kitchen theme',
+      'kitchen poster', 'kitchen artwork', 'kitchen interior design', 'kitchen _theme',
       'coastal kitchen', 'beach kitchen decor', 'ocean kitchen art', 'nautical kitchen'
     ],
     bedroom: [
@@ -513,7 +513,7 @@ const getContextSpecificTags = (context) => {
       'relaxing bedroom art', 'calming bedroom decor', 'peaceful bedroom art', 'serene bedroom',
       'tranquil bedroom decor', 'zen bedroom art', 'meditation bedroom', 'sleep sanctuary',
       'bedroom gallery wall', 'bedroom prints', 'bedroom canvas', 'bedroom poster',
-      'bedroom artwork', 'bedroom styling', 'bedroom accessories', 'bedroom theme',
+      'bedroom artwork', 'bedroom styling', 'bedroom accessories', 'bedroom _theme',
       'modern bedroom art', 'contemporary bedroom decor', 'minimalist bedroom', 'scandinavian bedroom',
       'boho bedroom', 'coastal bedroom decor'
     ],
@@ -523,7 +523,7 @@ const getContextSpecificTags = (context) => {
       'living room design', 'living room inspiration', 'living room makeover', 'living room renovation',
       'statement wall art', 'focal point art', 'conversation starter art', 'large wall art',
       'living room gallery wall', 'living room prints', 'living room canvas', 'living room poster',
-      'living room artwork', 'living room styling', 'living room accessories', 'living room theme',
+      'living room artwork', 'living room styling', 'living room accessories', 'living room _theme',
       'modern living room', 'contemporary living room', 'coastal living room', 'beach living room',
       'nautical living room', 'ocean living room'
     ],
@@ -545,9 +545,9 @@ const getContextSpecificTags = (context) => {
 /**
  * Generate 25 high-converting long-tail keyword combinations
  */
-const generateLongtailGoldmine = (phrase, context, theme) => {
+const generateLongtailGoldmine = (phrase, context, _theme) => {
   const cleanPhrase = phrase.replace(/[\[\]]/g, '').toLowerCase();
-  const contextCap = context.charAt(0).toUpperCase() + context.slice(1);
+  const _contextCap = context.charAt(0).toUpperCase() + context.slice(1);
   
   return [
     `${cleanPhrase} ${context} wall art`,
@@ -635,14 +635,14 @@ const getSeasonalTags = () => {
     winter: ['winter comfort', 'cozy home', 'hygge', 'peaceful winter', 'serene season', 'quiet moments']
   };
   
-  let currentSeason;
-  if (month >= 2 && month <= 4) currentSeason = 'spring';
-  else if (month >= 5 && month <= 7) currentSeason = 'summer';
-  else if (month >= 8 && month <= 10) currentSeason = 'fall';
-  else currentSeason = 'winter';
+  let _currentSeason;
+  if (month >= 2 && month <= 4) _currentSeason = 'spring';
+  else if (month >= 5 && month <= 7) _currentSeason = 'summer';
+  else if (month >= 8 && month <= 10) _currentSeason = 'fall';
+  else _currentSeason = 'winter';
   
   return [
-    ...seasonalTags[currentSeason],
+    ...seasonalTags[_currentSeason],
     'seasonal decor', 'timely art', 'current trends', 'now trending',
     'holiday gift', 'gift idea', 'perfect gift', 'thoughtful gift',
     'housewarming gift', 'new home gift', 'moving gift', 'celebration gift'
@@ -653,12 +653,12 @@ const getSeasonalTags = () => {
  * Generate SEO-optimized product copy for maximum organic traffic
  * @param {string} phrase - The wave caption phrase
  * @param {string} context - Where the art will be displayed (bathroom, office, etc.)
- * @param {string} theme - Content theme (therapeutic, workplace, etc.)
+ * @param {string} _theme - Content _theme (therapeutic, workplace, etc.)
  * @returns {object} Complete SEO-optimized product copy
  */
-export const generateSEOOptimizedCopy = (phrase, context = 'livingroom', theme = 'therapeutic') => {
+export const generateSEOOptimizedCopy = (phrase, context = 'livingroom', _theme = 'therapeutic') => {
   const template = SEO_COPY_TEMPLATES[context] || SEO_COPY_TEMPLATES.livingroom;
-  const currentSeason = getCurrentSeason();
+  const _currentSeason = getCurrentSeason();
   
   // Clean phrase for title (remove brackets and properly capitalize)
   const cleanPhrase = toTitleCase(phrase.replace(/[\[\]]/g, ''));
@@ -678,13 +678,13 @@ ${BENEFIT_COPY.quality}
 ${BENEFIT_COPY.shipping}`,
     
     // Comprehensive SEO tags for maximum 250-tag usage
-    tags: generateMaximumTags(cleanPhrase, context, theme, template.tags),
+    tags: generateMaximumTags(cleanPhrase, context, _theme, template.tags),
     
     // URL-friendly handle for SEO
     handle: generateSEOHandle(cleanPhrase, context),
     
     // Category for organization
-    category: getProductCategory(context, theme),
+    category: getProductCategory(context, _theme),
     
     // Pricing strategy based on context
     pricing: getContextPricing(context),
@@ -731,7 +731,7 @@ const generateSEOHandle = (phrase, context) => {
     .substring(0, 50) + `-${context}-wall-art`;
 };
 
-const getProductCategory = (context, theme) => {
+const getProductCategory = (context, _theme) => {
   const categories = {
     bathroom: 'Bathroom Decor > Wall Art',
     office: 'Office Decor > Motivational Art',

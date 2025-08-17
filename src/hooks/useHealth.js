@@ -13,7 +13,7 @@ export default function useHealth() {
         const res = await fetch('/api/health');
         const json = await res.json();
         if (mounted) setSystemStatus(json);
-      } catch (e) {
+      } catch (_error) {
         if (mounted) setSystemStatus({ backend: 'down' });
       }
     }

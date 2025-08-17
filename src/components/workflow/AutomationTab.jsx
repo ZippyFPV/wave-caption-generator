@@ -48,7 +48,7 @@ const AutomationTab = ({
   automationSummary,
   showSummaryDialog,
   setShowSummaryDialog,
-  StatusIndicator,
+  _StatusIndicator,  // TODO: implement status display
   tabStatuses,
   persistentMetrics
 }) => (

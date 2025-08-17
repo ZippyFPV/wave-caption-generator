@@ -76,7 +76,7 @@ class ImageStorageService {
           }
         };
       });
-    } catch (error) {
+    } catch (_error) {
       console.error('💥 IndexedDB initialization failed:', error);
       throw error;
     }
@@ -150,7 +150,7 @@ class ImageStorageService {
       
       return results;
       
-    } catch (error) {
+    } catch (_error) {
       console.error('💥 Error storing images:', error);
       console.groupEnd();
       throw error;
@@ -226,7 +226,7 @@ class ImageStorageService {
         };
       });
       
-    } catch (error) {
+    } catch (_error) {
       console.error('💥 Error accessing image cache:', error);
       return [];
     }
@@ -272,7 +272,7 @@ class ImageStorageService {
         };
       });
       
-    } catch (error) {
+    } catch (_error) {
       console.error('💥 Error clearing old cache:', error);
       throw error;
     }
@@ -308,7 +308,7 @@ class ImageStorageService {
         };
       });
       
-    } catch (error) {
+    } catch (_error) {
       console.error('💥 Error getting storage stats:', error);
       return null;
     }
@@ -338,7 +338,7 @@ class ImageStorageService {
       localStorage.setItem('wavecommerce_images', JSON.stringify(storageData));
       console.log('✅ Stored image metadata to localStorage');
       
-    } catch (error) {
+    } catch (_error) {
       console.error('💥 LocalStorage fallback failed:', error);
     }
   }
@@ -365,7 +365,7 @@ class ImageStorageService {
       
       return [];
       
-    } catch (error) {
+    } catch (_error) {
       console.error('💥 Error reading localStorage fallback:', error);
       return [];
     }
@@ -386,7 +386,7 @@ export const storeGeneratedImages = async (images, metadata = {}) => {
   try {
     await imageStorage.storeImages(images, sessionId, metadata);
     return sessionId;
-  } catch (error) {
+  } catch (_error) {
     // Fallback to localStorage
     await imageStorage.fallbackToLocalStorage(images, sessionId);
     return sessionId;
@@ -405,7 +405,7 @@ export const getLatestImages = async () => {
     console.log('📭 No cached images found - will fetch from API');
     return [];
     
-  } catch (error) {
+  } catch (_error) {
     console.error('💥 Error retrieving cached images:', error);
     // Try localStorage fallback
     return imageStorage.getFromLocalStorageFallback();

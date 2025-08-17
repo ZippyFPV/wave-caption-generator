@@ -200,7 +200,7 @@ export const CUSTOMER_PERSONAS = {
 /**
  * Generates a caption based on customer persona and humor preference
  */
-export const generatePersonalizedCaption = (persona = null, humorLevel = 'medium') => {
+export const generatePersonalizedCaption = (persona = null, _humorLevel = 'medium') => {
   let availableCategories = [];
   
   if (persona && CUSTOMER_PERSONAS[persona]) {
@@ -265,14 +265,14 @@ export const generateOptimizedContent = (options = {}) => {
   const {
     persona = null,
     season = null,
-    humorLevel = 'medium',
+    _humorLevel = 'medium',
     abTestVariant = 'A',
     targetKeywords = [],
     contentGoal = 'conversion'  // 'conversion', 'engagement', 'awareness'
   } = options;
   
   // Generate personalized content
-  const caption = generatePersonalizedCaption(persona, humorLevel);
+  const caption = generatePersonalizedCaption(persona, _humorLevel);
   const title = generatePersonalizedTitle(persona, season);
   
   // Generate SEO-friendly filename

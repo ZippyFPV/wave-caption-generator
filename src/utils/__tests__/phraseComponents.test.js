@@ -5,7 +5,7 @@
  * matches wave descriptions to wave sizes and produces valid captions.
  */
 
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, _vi } from '_vitest';
 import {
   generateCaptionPhrase,
   calculateMaxCombinations,

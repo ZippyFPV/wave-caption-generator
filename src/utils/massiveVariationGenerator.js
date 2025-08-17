@@ -67,7 +67,7 @@ export const PROFESSIONAL_CONTEXTS = [
 
 // Home and lifestyle contexts (30 contexts)
 export const LIFESTYLE_CONTEXTS = [
-  "home", "family", "personal", "intimate", "cozy", "comfortable", "welcoming", "warm", "inviting", "nurturing",
+  "home", "family", "_personal", "intimate", "cozy", "comfortable", "welcoming", "warm", "inviting", "nurturing",
   "domestic", "residential", "private", "sanctuary", "retreat", "haven", "oasis", "refuge", "shelter", "nest",
   "lifestyle", "living", "everyday", "routine", "casual", "relaxed", "informal", "laid-back", "easy-going", "natural"
 ];
@@ -76,7 +76,7 @@ export const LIFESTYLE_CONTEXTS = [
 export const WELLNESS_CONTEXTS = [
   "wellness", "therapy", "healing", "recovery", "restoration", "rehabilitation", "treatment", "counseling", "coaching",
   "mindfulness", "meditation", "yoga", "fitness", "health", "vitality", "wellbeing", "self-care", "self-help",
-  "personal growth", "development", "transformation", "enlightenment", "awakening", "consciousness", "awareness",
+  "_personal growth", "development", "transformation", "enlightenment", "awakening", "consciousness", "awareness",
   "mental health", "emotional health", "spiritual health", "holistic health", "integrative health", "alternative health"
 ];
 
@@ -172,7 +172,7 @@ export const CONTENT_THEMES = {
   MOTHERHOOD: {
     name: 'Motherhood & Parenting',
     description: 'For parents who are just trying to survive',
-    personas: ['NEW_MOTHER', 'EXPERIENCED_MOTHER', 'WORKING_MOTHER'],
+    _personas: ['NEW_MOTHER', 'EXPERIENCED_MOTHER', 'WORKING_MOTHER'],
     preferredActions: [
       'running on fumes', 'caffeinating aggressively', 'powered by spite', 'managing chaos',
       'embracing disasters', 'creating accidents', 'panicking quietly', 'repeating endlessly',
@@ -186,7 +186,7 @@ export const CONTENT_THEMES = {
   WELLNESS: {
     name: 'Wellness & Self-Care',
     description: 'Self-help without the BS',
-    personas: ['WELLNESS_SEEKER', 'MENTAL_HEALTH_PROFESSIONAL', 'HEALTHCARE_PROFESSIONAL'],
+    _personas: ['WELLNESS_SEEKER', 'MENTAL_HEALTH_PROFESSIONAL', 'HEALTHCARE_PROFESSIONAL'],
     preferredActions: [
       'practicing mindlessness', 'fostering instability', 'promoting retail therapy', 'finding chaos',
       'healing slowly', 'bringing chaos', 'creating accidents', 'offering unsolicited advice',
@@ -199,7 +199,7 @@ export const CONTENT_THEMES = {
   PROFESSIONAL: {
     name: 'Professional & Workplace',
     description: 'Work life barely holding together',
-    personas: ['CORPORATE_EXECUTIVE', 'CREATIVE_PROFESSIONAL', 'WORKING_MOTHER'],
+    _personas: ['CORPORATE_EXECUTIVE', 'CREATIVE_PROFESSIONAL', 'WORKING_MOTHER'],
     preferredActions: [
       'procrastinating professionally', 'winging it', 'multitasking badly', 'balancing nothing',
       'keeping it together barely', 'missing deadlines', 'lowering expectations', 'networking awkwardly',
@@ -211,7 +211,7 @@ export const CONTENT_THEMES = {
   HOME_DECOR: {
     name: 'Home & Living',
     description: 'Pinterest dreams vs reality',
-    personas: ['HOME_DECORATOR', 'GIFT_BUYER', 'INTERIOR_DESIGNER'],
+    _personas: ['HOME_DECORATOR', 'GIFT_BUYER', 'INTERIOR_DESIGNER'],
     preferredActions: [
       'promoting Pinterest fails', 'finding imbalance', 'accepting nothing', 'creating drama',
       'ignoring problems', 'bringing chaos', 'channeling chaos', 'mastering procrastination'
@@ -222,7 +222,7 @@ export const CONTENT_THEMES = {
   GENERAL: {
     name: 'General Inspirational',
     description: 'Just trying to get by',
-    personas: ['GIFT_BUYER', 'COLLEGE_STUDENT', 'RETIREMENT_SENIOR'],
+    _personas: ['GIFT_BUYER', 'COLLEGE_STUDENT', 'RETIREMENT_SENIOR'],
     preferredActions: [
       'living mediocrely', 'choosing wine', 'spreading anxiety', 'making ripples', 
       'being itself', 'focusing negatively', 'riding others\' success', 
@@ -245,7 +245,7 @@ export const CONTENT_THEMES = {
  * 
  * Total possible unique combinations: 2+ BILLION
  */
-export const generateUniqueCaption = (index = 0, persona = null, theme = null) => {
+export const generateUniqueCaption = (index = 0, _persona = null, theme = null) => {
   // Use prime numbers for better distribution and avoid clustering
   const prime1 = 17;
   const prime2 = 23;
@@ -294,17 +294,17 @@ export const generateUniqueCaption = (index = 0, persona = null, theme = null) =
 };
 
 /**
- * Generate persona-specific context additions
+ * Generate _persona-specific context additions
  */
-const getPersonaContext = (persona, index) => {
-  const personaData = MASSIVE_CUSTOMER_PERSONAS[persona];
-  if (!personaData) return '';
+const _getPersonaContext = (_persona, index) => {
+  const _personaData = MASSIVE_CUSTOMER_PERSONAS[_persona];
+  if (!_personaData) return '';
   
-  const contextIndex = index % personaData.styles.length;
-  const styleContext = personaData.styles[contextIndex];
+  const contextIndex = index % _personaData.styles.length;
+  const styleContext = _personaData.styles[contextIndex];
   
-  const demographicIndex = Math.floor(index / personaData.styles.length) % personaData.demographics.length;
-  const demographicContext = personaData.demographics[demographicIndex];
+  const demographicIndex = Math.floor(index / _personaData.styles.length) % _personaData.demographics.length;
+  const demographicContext = _personaData.demographics[demographicIndex];
   
   return `for ${demographicContext} ${styleContext} spaces`;
 };
@@ -344,9 +344,9 @@ export const TITLE_BENEFITS = [
  * Generate mathematically unique titles
  * 
  * Combinations: 35 Prefixes × 30 Descriptors × 24 Benefits = 25,200 base combinations
- * With persona variations and seasonal modifiers: 25,200 × 15 × 4 = 1,512,000 combinations
+ * With _persona variations and seasonal modifiers: 25,200 × 15 × 4 = 1,512,000 combinations
  */
-export const generateUniqueTitle = (index = 0, persona = null, season = null) => {
+export const generateUniqueTitle = (index = 0, _persona = null, season = null) => {
   const prefixIndex = index % TITLE_PREFIXES.length;
   const descriptorIndex = Math.floor(index / TITLE_PREFIXES.length) % TITLE_DESCRIPTORS.length;
   const benefitIndex = Math.floor(index / (TITLE_PREFIXES.length * TITLE_DESCRIPTORS.length)) % TITLE_BENEFITS.length;
@@ -362,16 +362,16 @@ export const generateUniqueTitle = (index = 0, persona = null, season = null) =>
   if (season === 'summer') seasonalModifier = 'Summer ';
   if (season === 'winter') seasonalModifier = 'Cozy ';
   
-  // Add persona-specific targeting
-  let personaTarget = '';
-  if (persona && MASSIVE_CUSTOMER_PERSONAS[persona]) {
-    const personaData = MASSIVE_CUSTOMER_PERSONAS[persona];
-    const targetIndex = index % personaData.demographics.length;
-    const target = personaData.demographics[targetIndex];
-    personaTarget = ` - Perfect for ${target.charAt(0).toUpperCase() + target.slice(1)}s`;
+  // Add _persona-specific targeting
+  let _personaTarget = '';
+  if (_persona && MASSIVE_CUSTOMER_PERSONAS[_persona]) {
+    const _personaData = MASSIVE_CUSTOMER_PERSONAS[_persona];
+    const targetIndex = index % _personaData.demographics.length;
+    const target = _personaData.demographics[targetIndex];
+    _personaTarget = ` - Perfect for ${target.charAt(0).toUpperCase() + target.slice(1)}s`;
   }
   
-  return `${seasonalModifier}${prefix} ${descriptor} ${benefit}${personaTarget}`;
+  return `${seasonalModifier}${prefix} ${descriptor} ${benefit}${_personaTarget}`;
 };
 
 /**
@@ -379,17 +379,17 @@ export const generateUniqueTitle = (index = 0, persona = null, season = null) =>
  */
 export const generateMassiveVariation = (globalIndex, options = {}) => {
   const {
-    persona = null,
+    _persona = null,
     season = null,
-    humorLevel = 'medium',
+    _humorLevel = 'medium',
     contentGoal = 'conversion',
     theme = null
   } = options;
   
-  // If theme is specified but no persona, select a random persona from theme
-  let selectedPersona = persona;
-  if (theme && !persona && CONTENT_THEMES[theme]) {
-    const themePersonas = CONTENT_THEMES[theme].personas;
+  // If theme is specified but no _persona, select a random _persona from theme
+  let selectedPersona = _persona;
+  if (theme && !_persona && CONTENT_THEMES[theme]) {
+    const themePersonas = CONTENT_THEMES[theme]._personas;
     selectedPersona = themePersonas[globalIndex % themePersonas.length];
   }
   
@@ -410,7 +410,7 @@ export const generateMassiveVariation = (globalIndex, options = {}) => {
   const conversionProbability = calculateVariationConversion(selectedPersona, contentGoal, globalIndex);
   
   const metadata = {
-    persona: selectedPersona || 'general',
+    _persona: selectedPersona || 'general',
     season: season || 'year-round',
     theme: theme || 'general',
     globalIndex,
@@ -438,7 +438,7 @@ export const generateMassiveVariation = (globalIndex, options = {}) => {
 /**
  * Calculate conversion probability for specific variation
  */
-const calculateVariationConversion = (persona, contentGoal, index) => {
+const calculateVariationConversion = (_persona, contentGoal, index) => {
   const baseConversion = {
     'CORPORATE_EXECUTIVE': 8.5,
     'HEALTHCARE_PROFESSIONAL': 9.2,
@@ -447,7 +447,7 @@ const calculateVariationConversion = (persona, contentGoal, index) => {
     'MENTAL_HEALTH_PROFESSIONAL': 11.3
   };
   
-  const base = baseConversion[persona] || 10.0;
+  const base = baseConversion[_persona] || 10.0;
   
   // Add variation based on component alignment
   const componentBonus = (index % 10) * 0.2; // 0-1.8% bonus based on component combination
@@ -463,7 +463,7 @@ export const analyzeMassiveVariationBatch = (variations) => {
   const analytics = {
     totalVariations: variations.length,
     uniquenessGuarantee: '100%', // Mathematical uniqueness
-    personaDistribution: {},
+    _personaDistribution: {},
     averageConversion: 0,
     projectedUniqueVariations: calculateMaxVariations(),
     componentDiversity: {
@@ -476,9 +476,9 @@ export const analyzeMassiveVariationBatch = (variations) => {
   variations.forEach(variation => {
     const { metadata } = variation;
     
-    // Track persona distribution
-    analytics.personaDistribution[metadata.persona] = 
-      (analytics.personaDistribution[metadata.persona] || 0) + 1;
+    // Track _persona distribution
+    analytics._personaDistribution[metadata._persona] = 
+      (analytics._personaDistribution[metadata._persona] || 0) + 1;
     
     // Track component diversity
     if (metadata.captionComponents) {
@@ -508,10 +508,10 @@ export const analyzeMassiveVariationBatch = (variations) => {
 const calculateMaxVariations = () => {
   const captionCombinations = WATER_ELEMENTS.length * WAVE_ACTIONS.length * EMOTIONAL_STATES.length;
   const titleCombinations = TITLE_PREFIXES.length * TITLE_DESCRIPTORS.length * TITLE_BENEFITS.length;
-  const personaVariations = Object.keys(MASSIVE_CUSTOMER_PERSONAS).length;
+  const _personaVariations = Object.keys(MASSIVE_CUSTOMER_PERSONAS).length;
   const seasonalVariations = 4; // year-round, holiday, gift, seasonal
   
-  return captionCombinations * titleCombinations * personaVariations * seasonalVariations;
+  return captionCombinations * titleCombinations * _personaVariations * seasonalVariations;
 };
 
 export default {

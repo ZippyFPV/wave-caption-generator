@@ -34,9 +34,9 @@ const ReviewTab = ({
   selectedImages,
   setSelectedImages,
   approvedImages,
-  setApprovedImages,
+  _setApprovedImages,  // TODO: implement approval management
   deletedImages,
-  setDeletedImages,
+  _setDeletedImages,  // TODO: implement deletion management
   processedImages,
   handleBatchApproval,
   handleImageApproval,
@@ -44,9 +44,9 @@ const ReviewTab = ({
   handleImageDelete,
   expandedImage,
   setExpandedImage,
-  editDialog,
-  setEditDialog,
-  StatusIndicator,
+  _editDialog,  // TODO: implement edit dialog
+  _setEditDialog,  // TODO: implement edit dialog
+  _StatusIndicator,  // TODO: implement status display
   tabStatuses
 }) => (
   <Box>

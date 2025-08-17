@@ -112,7 +112,7 @@ export const EMOTIONS = {
   millennial: [
     'adulting reluctantly', 'budgeting unsuccessfully', 'investing hopefully', 'saving sporadically',
     'exercising occasionally', 'eating responsibly-ish', 'socializing selectively', 'dating cautiously',
-    'traveling ambitiously', 'learning constantly', 'growing personally', 'healing intentionally',
+    'traveling ambitiously', 'learning constantly', 'growing _personally', 'healing intentionally',
     'manifesting desperately', 'networking authentically', 'influencing accidentally', 'creating passionately',
     'streaming endlessly', 'scrolling mindlessly', 'posting strategically', 'liking generously'
   ]
@@ -148,11 +148,11 @@ export const CAPTION_TEMPLATES = {
 /**
  * Generate a contextually appropriate closed-caption phrase that matches wave intensity
  * @param {string} waveSize - 'big', 'small', or 'medium' based on actual image analysis
- * @param {string} demographic - target audience persona
- * @param {string} theme - content theme/category  
+ * @param {string} _demographic - target audience _persona
+ * @param {string} _theme - content _theme/category  
  * @returns {string} Formatted closed-caption phrase perfectly aligned with wave size
  */
-export const generateCaptionPhrase = (waveSize = 'medium', demographic = 'universal', theme = 'lifestyle') => {
+export const generateCaptionPhrase = (waveSize = 'medium', _demographic = 'universal', _theme = 'lifestyle') => {
   // CRITICAL: Match action category precisely to wave size for authenticity
   let actionCategory = 'normal'; // default for medium waves
   
@@ -231,7 +231,7 @@ export const calculateMaxCombinations = () => {
       mediumWaves: normalActions
     },
     dailyCapacity: totalActions * 10, // Conservative estimate for daily unique content
-    monthlyCapacity: totalActions * 300 // Accounting for different personas and themes
+    monthlyCapacity: totalActions * 300 // Accounting for different _personas and _themes
   };
 };
 

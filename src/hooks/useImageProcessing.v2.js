@@ -62,11 +62,11 @@ export const useImageProcessing = () => {
   // Massive variation system
   const CUSTOMER_PERSONAS = Object.keys(MASSIVE_CUSTOMER_PERSONAS);
   const SEASONS = ['year-round', 'holiday', 'gift', 'summer', 'winter'];
-  let globalVariationIndex = 0;
+  let let _globalVariationIndex = 0;
 
   const generateMassiveContent = useCallback((imageIndex, batchStartIndex = 0, theme = null) => {
     const uniqueGlobalIndex = batchStartIndex + imageIndex + (Date.now() % 1000);
-    globalVariationIndex = uniqueGlobalIndex;
+    let _globalVariationIndex = uniqueGlobalIndex;
     
     const persona = CUSTOMER_PERSONAS[imageIndex % CUSTOMER_PERSONAS.length];
     const season = SEASONS[Math.floor(imageIndex / CUSTOMER_PERSONAS.length) % SEASONS.length];

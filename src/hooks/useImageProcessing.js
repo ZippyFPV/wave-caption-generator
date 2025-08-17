@@ -135,7 +135,7 @@ export const useImageProcessing = () => {
     
     loadCachedImages();
     console.groupEnd();
-  }, []);
+  }, [apiKey]);
 
   // Enhanced SEO title generation with persona targeting
   const _generateSEOTitle = (_persona, _season) => {
