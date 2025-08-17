@@ -8,6 +8,7 @@
 import { generateCaptionPhrase } from '../utils/phraseComponents.js';
 import { generateSEOOptimizedCopy } from '../utils/seoOptimizedCopy.js';
 import { listingTracker } from './listingTracker.js';
+import analytics from './analytics.js';
 
 // API Rate limits (requests per time period)
 const RATE_LIMITS = {
@@ -331,6 +332,17 @@ class FullAutomationService {
       // Record in persistent tracker
       listing.source = 'automation';
       listingTracker.recordListing(listing);
+      
+      // Track conversion in analytics
+      analytics.trackConversion('listing_created', {
+        listing_id: listingId,
+        caption: listing.imageData.caption,
+        context: listing.imageData.context,
+        wave_size: listing.imageData.waveSize,
+        title: listing.productCopy.title,
+        source: 'automation',
+        success: true
+      });
       
       // Log updated metrics
       const metrics = listingTracker.getMetrics();

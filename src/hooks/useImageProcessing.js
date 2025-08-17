@@ -457,6 +457,14 @@ export const useImageProcessing = () => {
         [...processedImages, ...processedResults] : 
         processedResults;
       
+      // Track image generation for analytics
+      analytics.event('images_generated', {
+        count: allProcessedImages.length,
+        theme: selectedTheme || 'default',
+        batch_mode: batchMode,
+        source: 'manual'
+      });
+      
       const sessionId = await storeGeneratedImages(allProcessedImages, {
         totalImages: allProcessedImages.length,
         processingDate: new Date().toISOString(),
