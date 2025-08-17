@@ -8,7 +8,8 @@
       "Bash(git add:*)",
       "Bash(node server.js)",
       "Bash(mv:*)",
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "Bash(npm run test:run:*)"
     ],
     "defaultMode": "acceptEdits"
   }
