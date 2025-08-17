@@ -5,7 +5,9 @@
       "Bash(npm run dev:*)",
       "Bash(mkdir:*)",
       "Bash(npm run lint)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(node server.js)",
+      "Bash(mv:*)"
     ],
     "defaultMode": "acceptEdits"
   }

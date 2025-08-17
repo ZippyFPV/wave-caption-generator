@@ -10,39 +10,10 @@ import {
   Button,
   Tooltip
 } from '@mui/material';
-import { Waves, Visibility, Store, Warning, CheckCircle, Error, Pause } from '@mui/icons-material';
+import { Waves, Visibility, Store } from '@mui/icons-material';
+import StatusIndicator from '../ui/StatusIndicator';
 
-const STATUS_INDICATORS = {
-  ready: { icon: CheckCircle, color: '#4CAF50', label: 'Ready' },
-  processing: { icon: Warning, color: '#FF9800', label: 'Processing' },
-  error: { icon: Error, color: '#F44336', label: 'Error' },
-  inactive: { icon: Pause, color: '#9E9E9E', label: 'Not Started' },
-  checking: { icon: Warning, color: '#FF9800', label: 'Checking' },
-  connected: { icon: CheckCircle, color: '#4CAF50', label: 'Connected' }
-};
-
-const StatusIndicator = ({ status, size = 'small' }) => {
-    const statusConfig = STATUS_INDICATORS[status];
-    
-    if (!statusConfig) {
-      console.warn(`Unknown status: ${status}`);
-      return <Warning sx={{ color: '#FF9800', fontSize: size === 'large' ? 24 : 16 }} />;
-    }
-    
-    const IconComponent = statusConfig.icon;
-    
-    return (
-      <Tooltip title={statusConfig.label}>
-        <IconComponent 
-          sx={{ 
-            color: statusConfig.color, 
-            fontSize: size === 'large' ? 24 : 16,
-            ml: 0.5 
-          }} 
-        />
-      </Tooltip>
-    );
-  };
+// StatusIndicator component is now imported from ui/StatusIndicator
 
 const DashboardTab = ({ imageStats, persistentMetrics, systemStatus, loading, setCurrentTab }) => (
   <Box>

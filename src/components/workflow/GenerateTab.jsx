@@ -13,7 +13,7 @@ import {
   Alert
 } from '@mui/material';
 import { Waves, CheckCircle, Error, Edit } from '@mui/icons-material';
-import ModeToggle from './ModeToggle';
+import ModeToggle from '../ui/ModeToggle';
 
 const GenerateTab = ({
   batchMode,

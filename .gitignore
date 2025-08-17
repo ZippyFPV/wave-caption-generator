@@ -36,3 +36,14 @@ build
 
 # OS generated files
 Thumbs.db
+
+# Application specific
+temp-uploads/
+*.log
+server.log
+frontend.log
+vite.log
+
+# Temporary files
+.tmp/
+temp/

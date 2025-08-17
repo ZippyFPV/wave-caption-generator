@@ -18,11 +18,7 @@ import {
   Store,
   Publish,
   Emergency,
-  Assessment,
-  CheckCircle,
-  Warning,
-  Error,
-  Pause
+  Assessment
 } from '@mui/icons-material';
 
 // Custom Hooks
@@ -31,6 +27,9 @@ import { useAutomation } from '../hooks/useAutomation.js';
 import { useListingManagement } from '../hooks/useListingManagement.js';
 import { useSystemStatus } from '../hooks/useSystemStatus.js';
 import { usePhraseManagement } from '../hooks/usePhraseManagement.js';
+
+// UI Components
+import StatusIndicator from './ui/StatusIndicator';
 
 // Tab Components
 import DashboardTab from './workflow/DashboardTab';
@@ -83,38 +82,7 @@ const WORKFLOW_TABS = [
   }
 ];
 
-// Status indicators
-const STATUS_INDICATORS = {
-  ready: { icon: CheckCircle, color: '#4CAF50', label: 'Ready' },
-  processing: { icon: Warning, color: '#FF9800', label: 'Processing' },
-  error: { icon: Error, color: '#F44336', label: 'Error' },
-  inactive: { icon: Pause, color: '#9E9E9E', label: 'Not Started' },
-  checking: { icon: Warning, color: '#FF9800', label: 'Checking' },
-  connected: { icon: CheckCircle, color: '#4CAF50', label: 'Connected' }
-};
-
-const StatusIndicator = ({ status, size = 'small' }) => {
-  const statusConfig = STATUS_INDICATORS[status];
-  
-  if (!statusConfig) {
-    console.warn(`Unknown status: ${status}`);
-    return <Warning sx={{ color: '#FF9800', fontSize: size === 'large' ? 24 : 16 }} />;
-  }
-  
-  const IconComponent = statusConfig.icon;
-  
-  return (
-    <Tooltip title={statusConfig.label}>
-      <IconComponent 
-        sx={{ 
-          color: statusConfig.color, 
-          fontSize: size === 'large' ? 24 : 16,
-          ml: 0.5 
-        }} 
-      />
-    </Tooltip>
-  );
-};
+// StatusIndicator is now imported from ui/StatusIndicator
 
 const WorkflowWaveApp = () => {
   // Core UI state
