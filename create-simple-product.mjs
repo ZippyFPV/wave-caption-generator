@@ -17,13 +17,32 @@ async function createBasicProduct() {
     const productData = {
       title: "Test Wave Art Product - WaveCommerce",
       description: "Beautiful ocean wave art for your space. This is a test product created by the WaveCommerce automation system.",
-      blueprint_id: 481, // Poster blueprint
-      print_provider_id: 1,
+      blueprint_id: 97, // Satin Posters (210gsm)
+      print_provider_id: 99, // Printify Choice
       variants: [
         {
-          id: 45898, // Standard variant ID for posters
-          price: 2999, // $29.99
+          id: 33742, // 14″ x 11″ landscape (4200x3300px required)
+          price: 1999, // $19.99
           is_enabled: true
+        }
+      ],
+      print_areas: [
+        {
+          variant_ids: [33742],
+          placeholders: [
+            {
+              position: "front",
+              images: [
+                {
+                  id: "https://images.pexels.com/photos/1001682/pexels-photo-1001682.jpeg?auto=compress&cs=tinysrgb&dpr=3&h=750&w=1260",
+                  x: 0.5,
+                  y: 0.5,
+                  scale: 1,
+                  angle: 0
+                }
+              ]
+            }
+          ]
         }
       ],
       tags: ["test", "waves", "ocean", "art"]

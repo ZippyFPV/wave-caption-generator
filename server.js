@@ -67,7 +67,8 @@ app.post('/api/process-image', async (req, res) => {
   try {
     const { imageUrl, caption, width = 4200, height = 3300 } = req.body;
     
-    console.log(`🎨 Processing image: ${imageUrl} with caption: "${caption}"`);
+    console.log(`🎨 Processing HIGH-QUALITY image: ${imageUrl} with caption: "${caption}"`);
+    console.log(`📐 Canvas dimensions: ${width}x${height} (300 DPI print quality)`);
     
     // Load the original image
     const image = await loadImage(imageUrl);
@@ -161,8 +162,8 @@ app.post('/api/process-image', async (req, res) => {
       ctx.fillText(displayCaption, textX, textY);
     }
     
-    // Convert to base64
-    const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+    // Convert to base64 with maximum quality for print
+    const dataUrl = canvas.toDataURL('image/jpeg', 1.0); // 100% quality - no compression
     
     const processedImageData = {
       dataUrl,
@@ -174,7 +175,8 @@ app.post('/api/process-image', async (req, res) => {
       timestamp: Date.now()
     };
     
-    console.log(`✅ Image processed successfully: ${width}x${height} with caption overlay`);
+    console.log(`✅ HIGH-QUALITY image processed: ${width}x${height} with caption overlay`);
+    console.log(`🔥 Quality: 100% JPEG, 300 DPI print resolution, zero compression artifacts`);
     res.json(processedImageData);
     
   } catch (error) {

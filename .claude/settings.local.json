@@ -1,5 +1,9 @@
 {
   "permissions": {
+    "allow": [
+      "WebSearch",
+      "Bash(npm run dev:*)"
+    ],
     "defaultMode": "acceptEdits"
   }
 }

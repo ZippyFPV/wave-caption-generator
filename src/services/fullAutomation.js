@@ -30,19 +30,42 @@ export const AUTOMATION_SCALES = {
   CONTINUOUS: { name: 'Continuous', count: Infinity, description: 'Keep generating until stopped' }
 };
 
-// Context distribution for variety - cycling through contexts
+// Comprehensive market category distribution for maximum penetration
 const CONTEXT_DISTRIBUTION = [
-  'bathroom', 'office', 'kitchen', 'hallway', 'bedroom', 'livingroom'
+  // Residential Spaces (12)
+  'bathroom', 'office', 'kitchen', 'hallway', 'bedroom', 'livingroom',
+  'dining-room', 'guest-room', 'master-bedroom', 'kids-room', 'nursery', 'home-office',
+  
+  // Commercial Spaces (8)
+  'restaurant', 'hotel', 'spa', 'clinic', 'dental-office', 'waiting-room', 'conference-room', 'reception',
+  
+  // Wellness & Healthcare (6)
+  'yoga-studio', 'meditation-room', 'therapy-office', 'massage-room', 'wellness-center', 'fitness-studio',
+  
+  // Hospitality & Entertainment (6)
+  'airbnb', 'vacation-rental', 'beach-house', 'cabin', 'resort', 'boutique-hotel',
+  
+  // Professional Services (8)
+  'law-office', 'real-estate-office', 'consulting-office', 'startup-office', 'coworking-space', 'salon', 'barbershop', 'studio'
 ];
 
-// Track context usage for balanced distribution
+// Comprehensive tracking for all 40 market categories
 let contextUsageTracker = {
-  bathroom: 0,
-  office: 0, 
-  kitchen: 0,
-  hallway: 0,
-  bedroom: 0,
-  livingroom: 0
+  // Residential Spaces
+  'bathroom': 0, 'office': 0, 'kitchen': 0, 'hallway': 0, 'bedroom': 0, 'livingroom': 0,
+  'dining-room': 0, 'guest-room': 0, 'master-bedroom': 0, 'kids-room': 0, 'nursery': 0, 'home-office': 0,
+  
+  // Commercial Spaces  
+  'restaurant': 0, 'hotel': 0, 'spa': 0, 'clinic': 0, 'dental-office': 0, 'waiting-room': 0, 'conference-room': 0, 'reception': 0,
+  
+  // Wellness & Healthcare
+  'yoga-studio': 0, 'meditation-room': 0, 'therapy-office': 0, 'massage-room': 0, 'wellness-center': 0, 'fitness-studio': 0,
+  
+  // Hospitality & Entertainment
+  'airbnb': 0, 'vacation-rental': 0, 'beach-house': 0, 'cabin': 0, 'resort': 0, 'boutique-hotel': 0,
+  
+  // Professional Services
+  'law-office': 0, 'real-estate-office': 0, 'consulting-office': 0, 'startup-office': 0, 'coworking-space': 0, 'salon': 0, 'barbershop': 0, 'studio': 0
 };
 
 class FullAutomationService {
@@ -360,8 +383,9 @@ class FullAutomationService {
       const context = this.getNextBalancedContext(); // Use balanced context selection
       const caption = generateCaptionPhrase(waveSize, 'millennial_professional', context);
       
-      // Process image with caption overlay
-      const processedImageData = await this.addCaptionToImage(waveImage.src.large, caption);
+      // Process image with caption overlay using HIGHEST quality source
+      const imageUrl = waveImage.src.original || waveImage.src.large2x || waveImage.src.large;
+      const processedImageData = await this.addCaptionToImage(imageUrl, caption);
       
       this.incrementRateLimit('pexels');
       
@@ -374,7 +398,8 @@ class FullAutomationService {
         metadata: {
           pexelsId: waveImage.id,
           photographer: waveImage.photographer,
-          originalUrl: waveImage.src.large
+          originalUrl: imageUrl, // Track the actual highest quality URL used
+          qualityLevel: waveImage.src.original ? 'original' : waveImage.src.large2x ? 'large2x' : 'large'
         }
       };
     });
@@ -416,6 +441,7 @@ class FullAutomationService {
       const processedImages = Object.fromEntries(results);
 
       console.log(`⚡ SPEED: Processed ${Object.keys(processedImages).length} variants in parallel`);
+      console.log(`🔥 QUALITY: Using highest resolution source (${processedImages['33742']?.metadata?.qualityLevel || 'unknown'})`);
 
       // Return the main size (14x11) as primary, but include all variants
       return {

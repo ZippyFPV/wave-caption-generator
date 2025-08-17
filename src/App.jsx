@@ -1,6 +1,7 @@
 import React from 'react';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
+// import SimpleTest from './SimpleTest.jsx';
 import WorkflowWaveApp from './components/WorkflowWaveApp.jsx';
 
 // Create Material UI theme matching the reference design
