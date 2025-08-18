@@ -106,7 +106,7 @@ class APIRateLimitService {
    * @param {boolean} isPublishing - For Printify, whether this is a publishing request
    */
   canMakeRequest(apiName, isPublishing = false) {
-    const const _limit = this.limits[apiName];
+    const _limit = this.limits[apiName];
     
     if (apiName === 'pexels') {
       const available = limit.requestsPerHour - limit.currentRequests;
@@ -136,7 +136,7 @@ class APIRateLimitService {
    * @param {boolean} isPublishing - For Printify publishing requests
    */
   recordRequest(apiName, isPublishing = false) {
-    const const _limit = this.limits[apiName];
+    const _limit = this.limits[apiName];
     limit.currentRequests++;
     
     if (apiName === 'printify' && isPublishing) {
@@ -181,7 +181,7 @@ class APIRateLimitService {
    * @returns {Promise} Resolves after appropriate delay
    */
   async handleRateLimit(apiName, attemptNumber = 0) {
-    const const _limit = this.limits[apiName];
+    const _limit = this.limits[apiName];
     const delay = limit.retryDelays[Math.min(attemptNumber, limit.retryDelays.length - 1)];
     
     console.warn(`⏱️ Rate limit hit for ${apiName}, waiting ${delay}ms (attempt ${attemptNumber + 1})`);
@@ -264,7 +264,7 @@ class APIRateLimitService {
    * @param {boolean} isPublishing - For Printify publishing requests
    */
   async waitForAvailableSlot(apiName, isPublishing = false) {
-    const const _limit = this.limits[apiName];
+    const _limit = this.limits[apiName];
     
     return new Promise(resolve => {
       const checkSlot = () => {

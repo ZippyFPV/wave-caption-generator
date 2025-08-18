@@ -1,12 +1,13 @@
 import { ENABLE_ANALYTICS, POSTHOG_KEY, POSTHOG_HOST } from '../config';
 import posthog from 'posthog-js';
 
-// Initialize PostHog
+// Initialize PostHog following official React docs
 if (ENABLE_ANALYTICS && POSTHOG_KEY && typeof window !== 'undefined') {
   posthog.init(POSTHOG_KEY, {
     api_host: POSTHOG_HOST,
-    autocapture: false, // We'll track manually for better control
-    capture_pageview: false // We'll handle this ourselves
+    capture_pageview: false, // We'll handle pageviews manually
+    capture_pageleave: true,
+    persistence: 'localStorage+cookie'
   });
 }
 
@@ -24,9 +25,9 @@ export const analytics = {
   page: (name, props = {}) => {
     if (!ENABLE_ANALYTICS) return;
     
-    // PostHog page tracking
+    // PostHog pageview tracking (official method)
     if (POSTHOG_KEY && typeof window !== 'undefined') {
-      safeCall(posthog.capture, '$pageview', { page: name, ...props });
+      safeCall(posthog.capture, '$pageview', { $current_url: name, ...props });
     }
     
     // Existing GA/FB tracking
@@ -39,7 +40,7 @@ export const analytics = {
   event: (action, params = {}) => {
     if (!ENABLE_ANALYTICS) return;
     
-    // PostHog event tracking
+    // PostHog event tracking (official method)
     if (POSTHOG_KEY && typeof window !== 'undefined') {
       safeCall(posthog.capture, action, params);
     }
@@ -51,7 +52,7 @@ export const analytics = {
       safeCall(window.fbq, 'trackCustom', action, params);
   },
   
-  // New conversion tracking method
+  // Conversion tracking method
   trackConversion: (type, data = {}) => {
     if (!ENABLE_ANALYTICS) return;
     
@@ -61,7 +62,7 @@ export const analytics = {
       ...data
     };
     
-    // Track in PostHog for analysis
+    // PostHog conversion tracking
     if (POSTHOG_KEY && typeof window !== 'undefined') {
       safeCall(posthog.capture, 'conversion', conversionData);
     }
@@ -69,6 +70,15 @@ export const analytics = {
     // Track in other platforms
     if (typeof window !== 'undefined' && window.gtag) 
       safeCall(window.gtag, 'event', 'conversion', conversionData);
+  },
+  
+  // PostHog identify method for user properties
+  identifyUser: (userId, properties = {}) => {
+    if (!ENABLE_ANALYTICS || !POSTHOG_KEY) return;
+    
+    if (typeof window !== 'undefined') {
+      safeCall(posthog.identify, userId, properties);
+    }
   },
   
   identify: (id, _traits = {}) => {

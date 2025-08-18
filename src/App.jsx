@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import WorkflowWaveApp from './components/WorkflowWaveApp.jsx';
+import analytics from './services/analytics.js';
 
 // Create Material UI theme matching the reference design
 const theme = createTheme({
@@ -49,6 +50,11 @@ const theme = createTheme({
 });
 
 const App = () => {
+  // Track initial page load
+  useEffect(() => {
+    analytics.page('/');
+  }, []);
+  
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
