@@ -60,7 +60,7 @@ const AutomationTab = ({
           <Typography variant="h6" color="error">
             AUTOMATION CONTROL CENTER
           </Typography>
-          <StatusIndicator status={tabStatuses.automation} size="large" />
+          {/* TODO: Implement status indicator */}
         </Stack>
 
         <Alert severity="warning" sx={{ mb: 3 }}>

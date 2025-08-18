@@ -460,8 +460,8 @@ export const useImageProcessing = () => {
       // Track image generation for analytics
       analytics.event('images_generated', {
         count: allProcessedImages.length,
-        theme: selectedTheme || 'default',
-        batch_mode: batchMode,
+        theme: 'default',
+        batch_mode: false,
         source: 'manual'
       });
       

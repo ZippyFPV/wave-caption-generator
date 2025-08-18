@@ -55,7 +55,7 @@ const ReviewTab = ({
         <Stack direction="row" alignItems="center" spacing={2} mb={2}>
           <Visibility color="primary" />
           <Typography variant="h6">Review & Approve Images</Typography>
-          <StatusIndicator status={tabStatuses.review} size="large" />
+          {/* StatusIndicator TODO */}
         </Stack>
 
         {/* Batch Controls */}

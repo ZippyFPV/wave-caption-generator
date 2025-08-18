@@ -268,7 +268,12 @@ class FullAutomationService {
       success: false
     };
 
-    this.currentProgress.currentListing = listing;
+    // Store only essential listing info to avoid localStorage quota issues
+    this.currentProgress.currentListing = {
+      listingId: listing.listingId,
+      steps: listing.steps,
+      success: listing.success
+    };
     
     try {
       // Step 1: Generate wave image with caption
@@ -280,6 +285,7 @@ class FullAutomationService {
       const imageData = await this.generateWaveImage(listingId);
       listing.imageData = imageData;
       listing.steps.generating_image = 'completed';
+      this.currentProgress.currentListing.steps = listing.steps; // Update progress tracking
       if (this.listingCallback) this.listingCallback({...listing});
       
       // Step 2: Create SEO-optimized copy
@@ -291,6 +297,7 @@ class FullAutomationService {
       const productCopy = this.generateProductCopy(imageData);
       listing.productCopy = productCopy;
       listing.steps.creating_copy = 'completed';
+      this.currentProgress.currentListing.steps = listing.steps; // Update progress tracking
       if (this.listingCallback) this.listingCallback({...listing});
       
       // Step 3: Upload to Printify and create product
@@ -304,6 +311,7 @@ class FullAutomationService {
       listing.printifyId = printifyProduct.id;
       listing.printifyUrl = `https://printify.com/app/products/${printifyProduct.id}`;
       listing.steps.creating_product = 'completed';
+      this.currentProgress.currentListing.steps = listing.steps; // Update progress tracking
       if (this.listingCallback) this.listingCallback({...listing});
       
       // Step 4: Auto-publish to Shopify (already integrated in server)
@@ -317,6 +325,10 @@ class FullAutomationService {
       listing.published = printifyProduct.published !== false;
       listing.success = true;
       listing.completedTime = Date.now();
+      
+      // Update final progress tracking
+      this.currentProgress.currentListing.steps = listing.steps;
+      this.currentProgress.currentListing.success = listing.success;
       
       // Comprehensive console logging
       console.log(`✅ LISTING COMPLETED #${this.currentProgress.completed + 1}`);

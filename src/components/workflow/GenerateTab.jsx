@@ -42,7 +42,7 @@ const GenerateTab = ({
           <Stack direction="row" alignItems="center" spacing={2} mb={2}>
             <Waves color="primary" />
             <Typography variant="h6">Wave Image Generation</Typography>
-            <StatusIndicator status={tabStatuses.generate} size="large" />
+            {/* StatusIndicator TODO */}
           </Stack>
 
           <Stack spacing={2} mb={3}>

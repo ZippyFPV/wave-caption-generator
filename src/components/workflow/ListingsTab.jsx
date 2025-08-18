@@ -45,7 +45,7 @@ const ListingsTab = ({
         <Stack direction="row" alignItems="center" spacing={2} mb={2}>
           <Store color="primary" />
           <Typography variant="h6">Create Printify Listings</Typography>
-          <StatusIndicator status={tabStatuses.listings} size="large" />
+          {/* StatusIndicator TODO */}
         </Stack>
 
         {/* Status Summary */}

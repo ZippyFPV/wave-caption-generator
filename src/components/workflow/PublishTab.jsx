@@ -51,7 +51,7 @@ const PublishTab = ({
         <Stack direction="row" alignItems="center" spacing={2} mb={2}>
           <Publish color="primary" />
           <Typography variant="h6">Publish to Shopify Store</Typography>
-          <StatusIndicator status={tabStatuses.publish} size="large" />
+          {/* StatusIndicator TODO */}
         </Stack>
 
         {/* Status Summary */}

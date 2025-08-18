@@ -52,19 +52,34 @@ export const useAutomation = () => {
       setAutomationSummary(null);
       
       // Update localStorage for cross-tab communication
-      localStorage.setItem('automationStatus', JSON.stringify({
-        isRunning: true,
-        scale: selectedScale,
-        startTime: Date.now()
-      }));
+      try {
+        localStorage.setItem('automationStatus', JSON.stringify({
+          isRunning: true,
+          scale: selectedScale,
+          startTime: Date.now()
+        }));
+      } catch (e) {
+        console.warn('⚠️ localStorage quota exceeded, continuing without cross-tab status sync');
+      }
 
       const result = await automationService.startAutomation(
         selectedScale,
         // Progress callback
         (progress) => {
           setAutomationProgress(progress);
-          // Update localStorage for cross-tab sync
-          localStorage.setItem('automationProgress', JSON.stringify(progress));
+          // Update localStorage for cross-tab sync with minimal data
+          try {
+            const minimalProgress = {
+              currentStep: progress.currentStep,
+              completed: progress.completed,
+              total: progress.total,
+              isRunning: progress.isRunning,
+              errorMessage: progress.errorMessage
+            };
+            localStorage.setItem('automationProgress', JSON.stringify(minimalProgress));
+          } catch (e) {
+            console.warn('⚠️ localStorage quota exceeded, continuing without cross-tab sync');
+          }
         },
         // Listing callback
         (listing) => {

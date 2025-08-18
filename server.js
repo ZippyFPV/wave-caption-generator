@@ -66,7 +66,15 @@ app.post('/api/process-image', async (req, res) => {
     console.log(`📐 Canvas dimensions: ${width}x${height} (300 DPI print quality)`);
     
     // Load the original image
-    const image = await loadImage(imageUrl);
+    console.log('🔄 Loading image from URL:', imageUrl);
+    let image;
+    try {
+      image = await loadImage(imageUrl);
+      console.log('✅ Image loaded successfully:', image.width, 'x', image.height);
+    } catch (imageError) {
+      console.error('❌ Failed to load image from Pexels:', imageError.message);
+      throw new Error(`Image loading failed: ${imageError.message}`);
+    }
     
     // Create canvas with Printify specifications
     const canvas = createCanvas(width, height);
@@ -86,6 +94,7 @@ app.post('/api/process-image', async (req, res) => {
       // Image is wider than canvas - fit to height and crop sides intelligently
       drawHeight = height;
       drawWidth = height * imageAspect;
+      drawY = 0; // Start at top of canvas
       
       // Rule of thirds: Position horizon line at 1/3 or 2/3 if possible
       // For ocean waves, prefer showing more water (bottom 2/3)
@@ -96,6 +105,7 @@ app.post('/api/process-image', async (req, res) => {
       // Image is taller than canvas - fit to width and preserve horizon
       drawWidth = width;
       drawHeight = width / imageAspect;
+      drawX = 0; // Start at left of canvas
       
       // Rule of thirds: For ocean scenes, position horizon at upper or lower third
       // Prefer showing waves in lower 2/3 of frame
@@ -105,7 +115,9 @@ app.post('/api/process-image', async (req, res) => {
     }
     
     // Draw the image
+    console.log('🖼️ Drawing image at position:', drawX, drawY, 'size:', drawWidth, drawHeight);
     ctx.drawImage(image, drawX, drawY, drawWidth, drawHeight);
+    console.log('✅ Image drawn on canvas');
     
     // Add caption overlay
     if (caption) {
@@ -128,24 +140,66 @@ app.post('/api/process-image', async (req, res) => {
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       
-      // Calculate text dimensions for background
-      const textMetrics = ctx.measureText(displayCaption);
-      const textWidth = textMetrics.width;
+      // Calculate text dimensions and ensure it fits with proper margins
+      let textMetrics = ctx.measureText(displayCaption);
+      let textWidth = textMetrics.width;
       const textHeight = fontSize;
       
-      // Smart positioning: avoid critical image areas
-      const textX = width / 2;
-      let textY = height * 0.82; // Lower position for better composition
+      // Calculate text constraints with proper margins
+      const textSideMargin = Math.max(20, width * 0.05);
+      const padding = Math.max(20, textHeight * 0.3); // Dynamic padding based on text height
+      const maxTextWidth = width - (textSideMargin * 2) - (padding * 2); // Account for bar padding too
       
-      // Draw semi-transparent background
-      const padding = 40;
+      // Reduce font size if text is too wide
+      while (textWidth > maxTextWidth && fontSize > minSize) {
+        fontSize *= 0.9;
+        ctx.font = `bold ${fontSize}px Arial, sans-serif`;
+        textMetrics = ctx.measureText(displayCaption);
+        textWidth = textMetrics.width;
+      }
+      
+      // Smart positioning: ensure text bar stays within canvas bounds
+      const textX = width / 2;
+      
+      // Calculate required space for text bar (padding already calculated above)
+      const barHeight = textHeight + padding;
+      const barWidth = textWidth + padding * 2;
+      
+      // Position text bar with safety margin from bottom
+      const safetyMargin = Math.max(20, height * 0.02); // At least 20px or 2% of height
+      let textY = height - barHeight / 2 - safetyMargin;
+      
+      // Ensure text doesn't go too high (keep it in lower third)
+      const maxY = height * 0.75; // Don't go higher than 75% down
+      textY = Math.min(textY, maxY);
+      
+      // Final bounds check - ensure bar fits completely within canvas
+      const barTop = textY - barHeight / 2;
+      const barBottom = textY + barHeight / 2;
+      
+      if (barBottom > height) {
+        textY = height - barHeight / 2 - 10; // 10px margin from bottom
+      }
+      
+      // Draw semi-transparent background with consistent side padding
       ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
-      ctx.fillRect(
-        textX - textWidth / 2 - padding,
-        textY - textHeight / 2 - padding / 2,
-        textWidth + padding * 2,
-        textHeight + padding
-      );
+      
+      // Ensure minimum side margins (5% of width or 20px minimum)
+      const sideMargin = Math.max(20, width * 0.05);
+      const maxBarWidth = width - (sideMargin * 2);
+      
+      // Adjust bar width if text is too wide
+      const finalBarWidth = Math.min(barWidth, maxBarWidth);
+      
+      // Center the bar with proper margins
+      const rectX = (width - finalBarWidth) / 2;
+      const rectY = Math.max(0, barTop);
+      const rectWidth = finalBarWidth;
+      const rectHeight = Math.min(barHeight, height - rectY);
+      
+      ctx.fillRect(rectX, rectY, rectWidth, rectHeight);
+      
+      console.log(`📝 Text positioning - Canvas: ${width}x${height}, TextY: ${textY.toFixed(1)}, Bar: ${rectX.toFixed(1)},${rectY.toFixed(1)} ${rectWidth.toFixed(1)}x${rectHeight.toFixed(1)}, Margin: ${sideMargin}px, FontSize: ${fontSize.toFixed(1)}px`);
       
       // High-contrast text with subtle shadow
       // Text shadow for better readability
