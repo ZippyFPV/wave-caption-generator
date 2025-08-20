@@ -4,6 +4,7 @@ import { storeGeneratedImages, getLatestImages } from '../services/imageStorage.
 import { makePexelsRequest, recordCacheHit } from '../services/apiRateLimit.js';
 import { generateMassiveVariation, MASSIVE_CUSTOMER_PERSONAS, CONTENT_THEMES } from '../utils/massiveVariationGenerator.js';
 import { generateCaptionPhrase } from '../utils/phraseComponents.js';
+import { validateCaptionAgainstImage } from '../utils/validation.js';
 
 /**
  * Analyze wave intensity from image properties
@@ -54,17 +55,20 @@ export const useImageProcessing = () => {
     setLoading,
     error,
     setError,
-    imageStats
+    imageStats,
+    qaThreshold,
+    addToQAQueue,
+    addApprovedImage
   } = useWorkflowStore();
 
   const apiKey = import.meta.env.VITE_PEXELS_API_KEY;
 
   // Massive variation system
   const CUSTOMER_PERSONAS = Object.keys(MASSIVE_CUSTOMER_PERSONAS);
-  const SEASONS = ['year-round', 'holiday', 'gift', 'summer', 'winter'];
-  let let _globalVariationIndex = 0;
+  let _globalVariationIndex = 0;
 
   const generateMassiveContent = useCallback((imageIndex, batchStartIndex = 0, theme = null) => {
+    const SEASONS = ['year-round', 'holiday', 'gift', 'summer', 'winter'];
     const uniqueGlobalIndex = batchStartIndex + imageIndex + (Date.now() % 1000);
     let _globalVariationIndex = uniqueGlobalIndex;
     
@@ -79,7 +83,7 @@ export const useImageProcessing = () => {
       contentGoal: 'conversion',
       theme
     });
-  }, [CUSTOMER_PERSONAS, SEASONS]);
+  }, [CUSTOMER_PERSONAS]);
 
   /**
    * Enhanced Canvas API function for adding captions to images
@@ -246,6 +250,8 @@ export const useImageProcessing = () => {
 
       try {
         const processedImageUrl = await addCaptionToImage(image.src.original, caption, i);
+        const validation = validateCaptionAgainstImage({ ...image, metadata: { ...metadata, waveSize } }, caption);
+
         const processedImage = {
           id: image.id,
           original: image.src.original,
@@ -257,15 +263,26 @@ export const useImageProcessing = () => {
           photographer_url: image.photographer_url,
           width: image.width,
           height: image.height,
-          metadata: metadata
+          metadata: metadata,
+          validation,
+          readyForPublish: validation.score >= (qaThreshold || 0.85)
         };
         
         processedResults.push(processedImage);
         
         // Add to store immediately for real-time updates
         addProcessedImages([processedImage]);
+
+        // If below threshold, add to QA queue for manual review
+        if (!processedImage.readyForPublish) {
+          addToQAQueue({ imageId: processedImage.id, reason: 'validation_score', score: validation.score, issues: validation.issues, processedImage });
+        } else {
+          // Optionally mark approvedImages for quick listing flow
+          if (typeof addApprovedImage === 'function') addApprovedImage(processedImage);
+        }
+
         console.log(`✅ Image ${i + 1} processed successfully`);
-        
+
       } catch (error) {
         console.error(`❌ Error processing image ${i + 1}:`, error);
         
@@ -281,6 +298,7 @@ export const useImageProcessing = () => {
           width: image.width,
           height: image.height,
           metadata: metadata
+          // No validation available in fallback
         };
         
         processedResults.push(fallbackImage);
@@ -309,7 +327,7 @@ export const useImageProcessing = () => {
 
     console.log('🎉 Image processing completed!');
     console.groupEnd();
-  }, [processedImages, setProcessedImages, addProcessedImages, generateMassiveContent, addCaptionToImage]);
+  }, [processedImages, setProcessedImages, addProcessedImages, generateMassiveContent, addCaptionToImage, qaThreshold, addToQAQueue, addApprovedImage]);
 
   /**
    * Fetch images from Pexels API with smart caching

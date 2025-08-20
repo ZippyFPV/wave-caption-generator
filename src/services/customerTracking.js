@@ -144,7 +144,7 @@ export const trackEvent = (eventType, eventData = {}, customerContext = null) =>
  */
 export const initializeHeatmapTracking = () => {
   let mouseTrail = [];
-  let scrollDepths = [];
+  let _scrollDepths = [];
   let clickPositions = [];
   
   // Mouse movement tracking (sampled to avoid performance issues)
@@ -236,39 +236,31 @@ export const initializeHeatmapTracking = () => {
  */
 const sendToAnalytics = (payload) => {
   try {
-    // Use analytics wrapper instead of direct gtag
+    // Use analytics wrapper instead of direct gtag/fbq
     analytics.event(payload.event, {
-        event_category: 'user_interaction',
-        event_label: payload.eventData.elementId,
-        value: payload.eventData.value || 1,
-        custom_parameters: {
-          session_id: payload.sessionId,
-          device_type: payload.context.deviceType
-        }
-      });
-    
-    // Use analytics wrapper instead of direct fbq
+      event_category: 'user_interaction',
+      event_label: payload.eventData.elementId,
+      value: payload.eventData.value || 1,
+      custom_parameters: {
+        session_id: payload.sessionId,
+        device_type: payload.context.deviceType
+      }
+    });
+
+    // Additional custom event
     analytics.event('CustomEvent', {
-        event_name: payload.event,
-        content_category: payload.context.utmCampaign,
-        content_ids: [payload.eventData.productId]
-      });
-      
-  } catch (error) {
-    console.error('Analytics tracking failed:', error);
-  }
-        value: payload.eventData.value || 0,
-        currency: 'USD'
-      });
-    }
-    
+      event_name: payload.event,
+      content_category: payload.context.utmCampaign,
+      content_ids: [payload.eventData.productId]
+    });
+
     // Custom analytics endpoint
     fetch('/api/analytics/track', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     }).catch(err => console.warn('Analytics tracking failed:', err));
-    
+
   } catch (error) {
     console.warn('Analytics error:', error);
   }

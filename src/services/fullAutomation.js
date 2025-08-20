@@ -90,9 +90,7 @@ class FullAutomationService {
   getNextBalancedContext() {
     // Find the context(s) with minimum usage
     const minUsage = Math.min(...Object.values(contextUsageTracker));
-    const availableContexts = Object.entries(contextUsageTracker)
-      .filter(([context, usage]) => usage === minUsage)
-      .map(([context]) => context);
+    const availableContexts = Object.keys(contextUsageTracker).filter(k => contextUsageTracker[k] === minUsage);
     
     // Randomly select from the least used contexts
     const selectedContext = availableContexts[Math.floor(Math.random() * availableContexts.length)];
@@ -133,15 +131,15 @@ class FullAutomationService {
    * @param {function} progressCallback - Called with progress updates
    * @param {function} listingCallback - Called when each listing is created/updated
    */
-  async startAutomation(scale, progressCallback = null, listingCallback = null) {
+  async startAutomation(scale, _progressCallback = null, _listingCallback = null) {
     if (this.isRunning) {
       throw new Error('Automation already running');
     }
 
     this.isRunning = true;
     this.stopRequested = false;
-    this.progressCallback = progressCallback;
-    this.listingCallback = listingCallback;
+    this.progressCallback = _progressCallback;
+    this.listingCallback = _listingCallback;
     this.createdListings = []; // Track all created listings
     this.currentProgress = {
       scale: scale,
@@ -249,7 +247,7 @@ class FullAutomationService {
   /**
    * Create a single complete listing through the entire pipeline
    */
-  async createSingleListing() {
+  async createSingleListing(_listingId) {
     const listingId = `listing_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     
     // Initialize listing with step tracking
@@ -384,7 +382,7 @@ class FullAutomationService {
   /**
    * Generate wave image with appropriate caption - Enhanced with retry logic
    */
-  async generateWaveImage(listingId) {
+  async generateWaveImage(_listingId) {
     await this.checkRateLimit('pexels');
     
     return await this.retryWithBackoff(async () => {
@@ -571,8 +569,9 @@ class FullAutomationService {
    * Generate SEO-friendly filename
    */
   generateFilename(imageData) {
-    const cleanCaption = imageData.caption
-      .replace(/[\[\]]/g, '')
+    const cleanCaption = (imageData?.caption || '')
+      .replaceAll('[', '')
+      .replaceAll(']', '')
       .toLowerCase()
       .replace(/[^a-z0-9\s]/g, '')
       .replace(/\s+/g, '-')

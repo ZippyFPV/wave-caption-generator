@@ -49,7 +49,7 @@ const AutomationTab = ({
   showSummaryDialog,
   setShowSummaryDialog,
   _StatusIndicator,  // TODO: implement status display
-  tabStatuses,
+  _tabStatuses,
   persistentMetrics
 }) => (
   <Box>

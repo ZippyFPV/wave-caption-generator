@@ -77,8 +77,8 @@ class ImageStorageService {
         };
       });
     } catch (_error) {
-      console.error('💥 IndexedDB initialization failed:', error);
-      throw error;
+      console.error('💥 IndexedDB initialization failed:', _error);
+      throw _error;
     }
   }
 
@@ -151,9 +151,9 @@ class ImageStorageService {
       return results;
       
     } catch (_error) {
-      console.error('💥 Error storing images:', error);
+      console.error('💥 Error storing images:', _error);
       console.groupEnd();
-      throw error;
+      throw _error;
     }
   }
 
@@ -227,7 +227,7 @@ class ImageStorageService {
       });
       
     } catch (_error) {
-      console.error('💥 Error accessing image cache:', error);
+      console.error('💥 Error accessing image cache:', _error);
       return [];
     }
   }
@@ -273,8 +273,8 @@ class ImageStorageService {
       });
       
     } catch (_error) {
-      console.error('💥 Error clearing old cache:', error);
-      throw error;
+      console.error('💥 Error clearing old cache:', _error);
+      throw _error;
     }
   }
 
@@ -309,7 +309,7 @@ class ImageStorageService {
       });
       
     } catch (_error) {
-      console.error('💥 Error getting storage stats:', error);
+      console.error('💥 Error getting storage stats:', _error);
       return null;
     }
   }
@@ -339,7 +339,7 @@ class ImageStorageService {
       console.log('✅ Stored image metadata to localStorage');
       
     } catch (_error) {
-      console.error('💥 LocalStorage fallback failed:', error);
+      console.error('💥 LocalStorage fallback failed:', _error);
     }
   }
 
@@ -365,8 +365,8 @@ class ImageStorageService {
       
       return [];
       
-    } catch (_error) {
-      console.error('💥 Error reading localStorage fallback:', error);
+    } catch (err) {
+      console.error('💥 Error reading localStorage fallback:', err);
       return [];
     }
   }
@@ -386,7 +386,7 @@ export const storeGeneratedImages = async (images, metadata = {}) => {
   try {
     await imageStorage.storeImages(images, sessionId, metadata);
     return sessionId;
-  } catch (_error) {
+  } catch {
     // Fallback to localStorage
     await imageStorage.fallbackToLocalStorage(images, sessionId);
     return sessionId;
@@ -406,7 +406,7 @@ export const getLatestImages = async () => {
     return [];
     
   } catch (_error) {
-    console.error('💥 Error retrieving cached images:', error);
+    console.error('💥 Error retrieving cached images:', _error);
     // Try localStorage fallback
     return imageStorage.getFromLocalStorageFallback();
   }

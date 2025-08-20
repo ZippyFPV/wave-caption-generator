@@ -18,7 +18,7 @@ import ModeToggle from '../ui/ModeToggle';
 const GenerateTab = ({
   batchMode,
   setBatchMode,
-  tabStatuses,
+  _tabStatuses,
   fetchImages,
   loading,
   CONTENT_THEMES,
@@ -32,7 +32,7 @@ const GenerateTab = ({
   rejectedPhrases,
   showPhraseHistory,
   setShowPhraseHistory,
-  StatusIndicator
+  _StatusIndicator
 }) => (
     <Box>
       <ModeToggle batchMode={batchMode} setBatchMode={setBatchMode} />

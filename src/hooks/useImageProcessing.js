@@ -3,6 +3,7 @@ import { storeGeneratedImages, getLatestImages } from '../services/imageStorage.
 import { makePexelsRequest, recordCacheHit } from '../services/apiRateLimit.js';
 import { generateMassiveVariation, MASSIVE_CUSTOMER_PERSONAS, CONTENT_THEMES } from '../utils/massiveVariationGenerator.js';
 import { generateCaptionPhrase } from '../utils/phraseComponents.js';
+import { analytics } from '../services/analytics.js';
 
 /**
  * Analyze wave intensity from image properties

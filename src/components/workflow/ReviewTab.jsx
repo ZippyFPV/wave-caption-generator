@@ -47,7 +47,7 @@ const ReviewTab = ({
   _editDialog,  // TODO: implement edit dialog
   _setEditDialog,  // TODO: implement edit dialog
   _StatusIndicator,  // TODO: implement status display
-  tabStatuses
+  _tabStatuses
 }) => (
   <Box>
     <Card>

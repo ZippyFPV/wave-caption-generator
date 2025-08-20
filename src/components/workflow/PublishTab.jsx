@@ -30,19 +30,22 @@ import {
 } from '@mui/icons-material';
 
 const PublishTab = ({
+  _creatingListings,
   createdProducts,
+  _setCreatingListings,
+  _setCreatedProducts,
+  _deleteAllListings,
+  bulkDeleteLoading,
+  confirmPhrase,
+  setConfirmPhrase,
+  handleBulkDelete,
   handleBulkPublish,
   handleProductPublish,
   handleProductDelete,
   bulkDeleteDialog,
   setBulkDeleteDialog,
-  bulkDeleteLoading,
-  _setBulkDeleteLoading,  // TODO: implement bulk delete UI
-  confirmPhrase,
-  setConfirmPhrase,
-  handleBulkDelete,
   _StatusIndicator,  // TODO: implement status display
-  tabStatuses,
+  _tabStatuses,
   persistentMetrics
 }) => (
   <Box>

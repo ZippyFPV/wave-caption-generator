@@ -152,7 +152,7 @@ class PrintifyAutomation {
   }
 
   // ADVANCED SEO-OPTIMIZED TITLE GENERATION - Based on 165K+ monthly search data
-  generateProductTitle(imageIndex, productType) {
+  generateProductTitle(imageIndex, _productType) {
     // Primary market-tested keywords with highest search volume
     const primaryKeywords = [
       'Ocean Wave Wall Art',

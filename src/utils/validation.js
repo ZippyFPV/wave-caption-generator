@@ -30,7 +30,7 @@ export const validateCaptionAgainstImage = (image, caption) => {
   // size alignment
   // extract a short action phrase from the caption (between brackets or first few words)
   let actionMatch = captionText.match(/\[(.*?)\]/);
-  let action = actionMatch ? actionMatch[1] : captionText.split(/[.\-\|]/)[0];
+  let action = actionMatch ? actionMatch[1] : captionText.split(/[.-]/)[0];
   if (!validateActionForWaveSize(action, waveSize)) {
     issues.push({ code: 'size_mismatch', reason: `Caption action may not match wave size (${waveSize})`, action });
   }

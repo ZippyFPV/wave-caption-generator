@@ -58,7 +58,7 @@ export const useAutomation = () => {
           scale: selectedScale,
           startTime: Date.now()
         }));
-      } catch (e) {
+      } catch {
         console.warn('⚠️ localStorage quota exceeded, continuing without cross-tab status sync');
       }
 
@@ -77,7 +77,7 @@ export const useAutomation = () => {
               errorMessage: progress.errorMessage
             };
             localStorage.setItem('automationProgress', JSON.stringify(minimalProgress));
-          } catch (e) {
+          } catch {
             console.warn('⚠️ localStorage quota exceeded, continuing without cross-tab sync');
           }
         },

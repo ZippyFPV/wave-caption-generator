@@ -546,7 +546,7 @@ const getContextSpecificTags = (context) => {
  * Generate 25 high-converting long-tail keyword combinations
  */
 const generateLongtailGoldmine = (phrase, context, _theme) => {
-  const cleanPhrase = phrase.replace(/[\[\]]/g, '').toLowerCase();
+  const cleanPhrase = phrase.split('[').join('').split(']').join('').toLowerCase();
   const _contextCap = context.charAt(0).toUpperCase() + context.slice(1);
   
   return [
@@ -661,7 +661,7 @@ export const generateSEOOptimizedCopy = (phrase, context = 'livingroom', _theme 
   const _currentSeason = getCurrentSeason();
   
   // Clean phrase for title (remove brackets and properly capitalize)
-  const cleanPhrase = toTitleCase(phrase.replace(/[\[\]]/g, ''));
+  const cleanPhrase = toTitleCase(phrase.split('[').join('').split(']').join(''));
   
   return {
     // SEO-optimized title (under 60 characters for search results)
@@ -760,6 +760,7 @@ const toTitleCase = (str) => {
   if (!str) return str;
   
   // Articles, conjunctions, and prepositions that should remain lowercase (unless first word)
+  // Special handling for 'I' - always capitalize
   const lowercaseWords = new Set([
     'a', 'an', 'and', 'as', 'at', 'but', 'by', 'for', 'if', 'in', 'of', 'on', 'or', 'the', 'to', 'up', 'via', 'with'
   ]);
@@ -768,7 +769,6 @@ const toTitleCase = (str) => {
     .split(' ')
     .map((word, index) => {
       // Always capitalize first word, or if not in lowercase words list
-      // Special handling for 'I' - always capitalize
       if (index === 0 || !lowercaseWords.has(word) || word === 'i') {
         return word.charAt(0).toUpperCase() + word.slice(1);
       }

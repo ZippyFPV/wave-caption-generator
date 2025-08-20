@@ -109,21 +109,21 @@ class APIRateLimitService {
     const _limit = this.limits[apiName];
     
     if (apiName === 'pexels') {
-      const available = limit.requestsPerHour - limit.currentRequests;
-      console.log(`🔍 Pexels Rate Check: ${limit.currentRequests}/${limit.requestsPerHour} used, ${available} available`);
+      const available = _limit.requestsPerHour - _limit.currentRequests;
+      console.log(`🔍 Pexels Rate Check: ${_limit.currentRequests}/${_limit.requestsPerHour} used, ${available} available`);
       return available > 0;
     }
     
     if (apiName === 'printify') {
-      const generalAvailable = limit.requestsPerMinute - limit.currentRequests;
+      const generalAvailable = _limit.requestsPerMinute - _limit.currentRequests;
       
       if (isPublishing) {
-        const publishingAvailable = limit.publishingRequestsPer30Min - limit.publishingRequests;
-        console.log(`🔍 Printify Publishing Rate Check: ${limit.publishingRequests}/${limit.publishingRequestsPer30Min} used`);
+        const publishingAvailable = _limit.publishingRequestsPer30Min - _limit.publishingRequests;
+        console.log(`🔍 Printify Publishing Rate Check: ${_limit.publishingRequests}/${_limit.publishingRequestsPer30Min} used`);
         return generalAvailable > 0 && publishingAvailable > 0;
       }
       
-      console.log(`🔍 Printify Rate Check: ${limit.currentRequests}/${limit.requestsPerMinute} used`);
+      console.log(`🔍 Printify Rate Check: ${_limit.currentRequests}/${_limit.requestsPerMinute} used`);
       return generalAvailable > 0;
     }
     
@@ -137,17 +137,17 @@ class APIRateLimitService {
    */
   recordRequest(apiName, isPublishing = false) {
     const _limit = this.limits[apiName];
-    limit.currentRequests++;
+    _limit.currentRequests++;
     
     if (apiName === 'printify' && isPublishing) {
-      limit.publishingRequests++;
-      console.log(`📊 Recorded Printify publishing request: ${limit.publishingRequests}/${limit.publishingRequestsPer30Min}`);
+      _limit.publishingRequests++;
+      console.log(`📊 Recorded Printify publishing request: ${_limit.publishingRequests}/${_limit.publishingRequestsPer30Min}`);
     }
     
     this.stats[apiName].total++;
     this.stats[apiName].successful++;
     
-    console.log(`✅ Request recorded for ${apiName}: ${limit.currentRequests} total this window`);
+    console.log(`✅ Request recorded for ${apiName}: ${_limit.currentRequests} total this window`);
   }
 
   /**
@@ -182,7 +182,7 @@ class APIRateLimitService {
    */
   async handleRateLimit(apiName, attemptNumber = 0) {
     const _limit = this.limits[apiName];
-    const delay = limit.retryDelays[Math.min(attemptNumber, limit.retryDelays.length - 1)];
+    const delay = _limit.retryDelays[Math.min(attemptNumber, _limit.retryDelays.length - 1)];
     
     console.warn(`⏱️ Rate limit hit for ${apiName}, waiting ${delay}ms (attempt ${attemptNumber + 1})`);
     

@@ -15,20 +15,24 @@ export const WAVE_DESCRIPTORS = {
   big: [
     'Epic', 'Dramatic', 'Legendary', 'Maximum', 'Intense',
     'Aggressive', 'Overwhelming', 'Spectacular', 'Thunderous', 'Massive',
-    'Unstoppable', 'Powerful', 'Crushing', 'Monumental', 'Explosive'
+    'Unstoppable', 'Powerful', 'Crushing', 'Monumental', 'Explosive',
+    'Roaring', 'Dominant', 'Commanding', 'Forceful', 'Majestic'
   ],
   
-  // Small gentle waves - tired, minimal energy  
+  // Small gentle waves - calm, minimal energy
   small: [
     'Tired', 'Gentle', 'Minimal', 'Exhausted', 'Sleepy',
-    'Barely', 'Weakly', 'Softly', 'Quietly', 'Sluggishly', 
-    'Lazily', 'Half-hearted', 'Reluctant', 'Depleted', 'Drained'
+    'Barely', 'Subtle', 'Soft', 'Quiet', 'Slender',
+    'Delicate', 'Tender', 'Murmuring', 'Low-key', 'Understated',
+    'Meek', 'Hushed', 'Tranquil', 'Faint', 'Listless'
   ],
   
   // Medium waves - moderate energy
   medium: [
     'Steady', 'Moderate', 'Consistent', 'Regular', 'Standard',
-    'Average', 'Typical', 'Routine', 'Normal', 'Ordinary'
+    'Balanced', 'Measured', 'Reliable', 'Calm', 'Comfortable',
+    'Stable', 'Even', 'Predictable', 'Composed', 'Moderated',
+    'Polished', 'Sober', 'Reserved', 'Temperate', 'Practical'
   ]
 };
 
@@ -36,85 +40,180 @@ export const WAVE_DESCRIPTORS = {
 export const WAVE_ACTIONS = {
   // Big wave actions - dramatic, powerful, overwhelming
   dramatic: [
-    'massive wave thundering against shore with obvious superiority complex',
-    'towering wave announcing arrival like it owns the entire ocean',
-    'gigantic wave demonstrating why beach umbrellas fear commitment',
-    'enormous wave having main character moment while fish evacuate',
-    'colossal wave showing off for seagulls who remain unimpressed',
-    'epic wave delivering dramatic monologue to confused surfers',
-    'legendary wave crushing expectations and occasionally driftwood',
-    'unstoppable wave making grand entrance, demanding standing ovation',
-    'powerful wave overcompensating for yesterday\'s gentle performance',
-    'overwhelming wave celebrating existence with unnecessary volume'
+    'massive wave thundering against shore with obvious superiority',
+    'towering wave arriving like it owns the coastline',
+    'gigantic wave rearranging driftwood with theatrical flair',
+    'enormous wave stealing the spotlight from quiet tide pools',
+    'colossal wave cresting in an intentional display of force',
+    'epic wave delivering a slow, cinematic sweep across the beach',
+    'legendary wave reshaping the shoreline one swell at a time',
+    'unstoppable wave rolling in with uncompromising momentum',
+    'powerful wave commanding attention and respectful distance',
+    'overwhelming wave announcing presence with resounding impact',
+    'roaring wave executing a perfect, audiovisual masterpiece',
+    'monumental wave carving deep impressions into sand',
+    'crushing wave collapsing into foamy aftermath dramatically',
+    'majestic wave performing a grand, oceanic bow',
+    'forceful wave asserting its territory with loud applause'
   ],
   
-  // Small wave actions - tired, minimal effort, gentle
+  // Small wave actions - calm, refined, gentle
   gentle: [
-    'tiny wave approaching shore with Monday morning energy levels',
-    'exhausted wave doing absolute bare minimum to qualify as wave',
-    'sleepy wave half-heartedly lapping at sand like tired kitten',
-    'gentle wave whispering "I tried" before dissolving into foam',
-    'minimal wave practicing wave-ing in beginner mode',
-    'tired wave putting in just enough effort to avoid ocean HR',
-    'barely-there wave tiptoeing through existence, disturbing nothing',
-    'depleted wave successfully achieving wetness without causing drama',
-    'sluggish wave remembering how to ocean at 30% capacity',
-    'weakly rolling wave accepting participation trophy gracefully'
+    'tiny wave edging ashore with quiet, polite intent',
+    'exhausted wave folding softly into sand, whisper-quiet',
+    'sleepy wave making a tentative, graceful approach',
+    'gentle wave tracing a delicate line along the shoreline',
+    'minimal wave offering a polite nod to the beach',
+    'tired wave easing in like it has places to be later',
+    'barely-there wave touching toes to sand and retreating',
+    'depleted wave giving a soft, damp hello before drifting away',
+    'sluggish wave moving with deliberate leisure',
+    'weakly rolling wave completing its duties without fuss',
+    'subtle wave folding inward like a quiet exhale',
+    'delicate wave brushing pebbles with soft persistence',
+    'tranquil ripple mingling with reflected sunlight',
+    'hushed wave drifting gently until it dissolves',
+    'meek wave practicing restraint near the shore'
   ],
   
-  // Medium wave actions - steady, reliable, professional
+  // Medium wave actions - steady, reliable, composed
   normal: [
-    'steady wave maintaining professional ocean composure',
-    'consistent wave following textbook wave behavior manual',
-    'moderate wave handling shore duties with quiet competence',
-    'regular wave meeting basic expectations without complaints',
-    'standard wave demonstrating responsible wave-ing to impressed crabs',
-    'typical wave adulting appropriately while fish approve',
-    'routine wave executing perfectly ordinary wave activities',
-    'average wave successfully being wave-like without causing incidents',
-    'normal wave maintaining socially acceptable oceanic behavior',
-    'reliable wave doing the job steadily, earning coast guard respect'
+    'steady wave maintaining a consistent shoreline rhythm',
+    'consistent wave following textbook tide etiquette',
+    'moderate wave carrying small treasures to the sand',
+    'regular wave fulfilling its expected coastal duties',
+    'standard wave rolling in with dependable grace',
+    'typical wave marking time along the beach edge',
+    'routine wave completing an ordinary, satisfying sweep',
+    'average wave performing as waves should—calm and true',
+    'reliable wave smoothing footprints with patient persistence',
+    'measured wave balancing energy and restraint',
+    'balanced wave working in steady, even intervals',
+    'polished wave finishing its motion with modest pride',
+    'composed wave keeping the shoreline rhythm in order',
+    'temperate wave arriving and receding with professional care',
+    'practical wave doing its duty without fanfare'
   ]
 };
+
+// --- New composable pools (verbs / objects / modifiers) ---
+// These are intentionally small, descriptor-free fragments to maximize clean combinatorics.
+export const WAVE_VERBS = {
+  dramatic: ['roars', 'crests', 'barrels', 'charges', 'thunders', 'surges', 'sweeps', 'collapses'],
+  gentle: ['laps', 'edges', 'whispers', 'traces', 'touches', 'brushing', 'eases', 'meanders'],
+  normal:  ['rolls', 'moves', 'flows', 'arrives', 'returns', 'passes', 'advances', 'proceeds']
+};
+
+export const WAVE_OBJECTS = {
+  dramatic: ['across the shoreline', 'over driftwood', 'past the breakwater', 'through surf lines', 'toward startled surfers', 'into deep blue'],
+  gentle:  ['along the sand', 'around tide pools', 'across pebbles', 'under morning light', 'along the waterline', 'brushing the shallows'],
+  normal:  ['to the shore', 'toward the beach', 'over wet sand', 'around rocks', 'along the coast', 'near the tide line']
+};
+
+export const WAVE_MODIFIERS = {
+  dramatic: ['with cinematic impact', 'in slow motion', 'like a curtain', 'announcing itself loudly', 'with thunderous applause'],
+  gentle:  ['in soft silence', 'with polite restraint', 'like a quiet sigh', 'barely disturbing anything', 'with barely audible movement'],
+  normal:  ['with steady cadence', 'in even intervals', 'with steady rhythm', 'without fuss', 'with measured patience']
+};
+
+// Composer function: builds descriptor-free activity, then applies descriptor and emotion via templates
+export function composeAction({ waveSize = 'medium', persona = 'universal', _theme = null, rng = Math.random } = {}) {
+  const actionCategory = waveSize === 'big' ? 'dramatic' : waveSize === 'small' ? 'gentle' : 'normal';
+  const pick = (arr) => arr[Math.floor(rng() * arr.length)];
+
+  // Ensure pools exist
+  const verbs = WAVE_VERBS[actionCategory] || WAVE_VERBS.normal;
+  const objects = WAVE_OBJECTS[actionCategory] || WAVE_OBJECTS.normal;
+  const modifiers = WAVE_MODIFIERS[actionCategory] || WAVE_MODIFIERS.normal;
+
+  const verb = pick(verbs);
+  const object = pick(objects);
+  const addModifier = rng() < 0.35; // optional modifier probability
+  const modifier = addModifier ? pick(modifiers) : '';
+
+  // Build activity without embedding any descriptor words
+  const activity = `${verb} ${object}${modifier ? ` ${modifier}` : ''}`.trim();
+
+  // Choose descriptor and emotion
+  const descriptor = pick(WAVE_DESCRIPTORS[waveSize] || WAVE_DESCRIPTORS.medium);
+  const emotionPool = EMOTIONS[persona] || EMOTIONS.universal;
+  const emotion = pick(emotionPool);
+
+  // Select a template (favor shorter ones for product copy)
+  // Prefer action templates for dramatic, standard for others to encourage descriptors
+  const templateList = waveSize === 'big' ? CAPTION_TEMPLATES.action : CAPTION_TEMPLATES.standard;
+  const template = pick(templateList);
+
+  let captionCore = template
+    .replace('{descriptor}', descriptor)
+    .replace('{activity}', activity)
+    .replace('{emotion}', emotion)
+    .replace('{activity}', activity); // safe replace if template has activity twice
+
+  // Post-process: ensure descriptor language appears for big waves and gentle language for small
+  // If descriptor isn't appropriate for waveSize, replace with a suitable one from WAVE_DESCRIPTORS
+  const appropriateDescriptorPool = WAVE_DESCRIPTORS[waveSize] || WAVE_DESCRIPTORS.medium;
+  const containsAppropriate = appropriateDescriptorPool.some(d => captionCore.toLowerCase().includes(d.toLowerCase()));
+  if (!containsAppropriate) {
+    // force a descriptor from the appropriate pool into the caption
+    const forced = pick(appropriateDescriptorPool);
+    captionCore = `${forced} ${captionCore}`;
+  }
+
+  // Remove accidental duplicate descriptor words if activity already contains them
+  const lowerDesc = descriptor.toLowerCase();
+  if (activity.toLowerCase().includes(lowerDesc)) {
+    // use RegExp with escaped word boundaries
+    captionCore = captionCore.replace(new RegExp('\\b' + descriptor + '\\b', 'gi'), '').replace(/\s{2,}/g, ' ').trim();
+  }
+
+  // Enforce readability constraints
+  const MAX_CHARS = 120;
+  if (captionCore.length > MAX_CHARS) captionCore = captionCore.slice(0, MAX_CHARS - 1).replace(/\s+\S*$/, '');
+
+  // Final closed-caption formatting
+  // Ensure bracketed string has descriptor words for waveSize
+  return `[${captionCore}]`;
+}
 
 // Emotional States/Outcomes (how it feels/ends)
 export const EMOTIONS = {
   // Professional emotions
   professional: [
     'crushing expectations', 'exceeding limits', 'questioning life choices', 'seeking work-life balance',
-    'channeling inner CEO', 'manifesting success', 'networking awkwardly', 'imposter syndrome activated',
-    'multitasking magnificently', 'procrastinating professionally', 'email overwhelm detected', 
-    'deadline pressure mounting', 'creativity flowing', 'burnout approaching', 'promotion pursuing',
-    'side hustle juggling', 'leadership emerging', 'innovation brewing', 'collaboration attempted',
-    'efficiency optimizing'
+    'channeling inner CEO', 'manifesting success', 'networking politely', 'imposter thoughts present',
+    'multitasking efficiently', 'procrastination acknowledged', 'inbox pressure noted', 
+    'deadline focus initiated', 'creativity flowing', 'burnout monitored', 'promotion in mind',
+    'side project progressing', 'leadership nudged', 'innovation brewing', 'collaboration underway',
+    'efficiency optimizing', 'steady performance observed'
   ],
   
-  // Parent emotions
+  // Parent emotions (cleaned and realistic)
   parent: [
     'surviving with grace', 'needs immediate backup', 'barely maintaining sanity', 'love overwhelming logic',
-    'patience reserves depleted', 'coffee dependency confirmed', 'bedtime victory achieved', 
-    'tantrum weathered successfully', 'guilt trip activated', 'proud moment captured',
-    'chaos management enabled', 'milestone celebrated', 'worry mode engaged', 'helicopter parenting detected',
-    'screen time negotiated', 'vegetables successfully hidden', 'timeout enforced reluctantly',
-    'unconditional love confirmed', 'sleep deprivation accepted', 'growth witnessed'
+    'patience reserves low', 'coffee dependency confirmed', 'bedtime routine achieved',
+    'tantrum survived calmly', 'pride quietly displayed', 'proud moment noticed',
+    'chaos managed effectively', 'milestone quietly celebrated', 'worry momentarily present', 'gentle guidance given',
+    'screen time negotiated', 'timeout enforced calmly', 'unconditional love affirmed', 'sleep deprivation real',
+    'growth observed', 'family laughter captured'
   ],
   
-  // Universal emotions  
+  // Universal emotions
   universal: [
-    'intensifies dramatically', 'detected by sensors', 'approaching rapidly', 'activated successfully',
-    'loading slowly', 'buffering endlessly', 'processing internally', 'updating continuously',
-    'synchronizing perfectly', 'optimizing automatically', 'calibrating precisely', 'initializing properly',
-    'executing flawlessly', 'completing successfully', 'achieving magnificently', 'performing excellently',
-    'functioning normally', 'operating smoothly', 'running efficiently', 'working miraculously'
+    'intensifies', 'detected by sensors', 'approaching steadily', 'activated gently',
+    'loading', 'buffering', 'processing', 'updating',
+    'synchronizing', 'optimizing', 'calibrating', 'initializing',
+    'executing', 'completing', 'achieving', 'performing',
+    'functioning normally', 'operating smoothly', 'running efficiently', 'working as intended'
   ],
   
-  // Millennial-specific emotions
+  // Millennial-specific emotions (cleaned, production-ready)
   millennial: [
-    'adulting reluctantly', 'budgeting unsuccessfully', 'investing hopefully', 'saving sporadically',
-    'exercising occasionally', 'eating responsibly-ish', 'socializing selectively', 'dating cautiously',
-    'traveling ambitiously', 'learning constantly', 'growing _personally', 'healing intentionally',
-    'manifesting desperately', 'networking authentically', 'influencing accidentally', 'creating passionately',
-    'streaming endlessly', 'scrolling mindlessly', 'posting strategically', 'liking generously'
+    'adulting in progress', 'budgeting thoughtfully', 'investing cautiously', 'saving intentionally',
+    'exercising occasionally', 'eating mindfully', 'socializing selectively', 'dating intentionally',
+    'travel planning underway', 'learning continuously', 'personal growth active', 'healing steadily',
+    'manifesting with purpose', 'networking genuinely', 'creating consistently', 'streaming content',
+    'offline moments valued', 'posting deliberately', 'curating thoughtfully', 'community building'
   ]
 };
 
@@ -125,7 +224,9 @@ export const CAPTION_TEMPLATES = {
     '[{descriptor} {activity} {emotion}]',
     '[{activity} {emotion} {descriptor}ly]', 
     '[{descriptor} {emotion} during {activity}]',
-    '[{activity} resulting in {descriptor} {emotion}]'
+    '[{activity} resulting in {descriptor} {emotion}]',
+    '[{descriptor} {activity} — {emotion}]',
+    '[{activity} ({descriptor}) — {emotion}]'
   ],
   
   // Action-focused format
@@ -133,7 +234,8 @@ export const CAPTION_TEMPLATES = {
     '[{descriptor}ly {activity} while {emotion}]',
     '[Currently {activity} with {descriptor} {emotion}]',
     '[{activity} {emotion} - {descriptor} edition]',
-    '[Breaking: {descriptor} {activity} {emotion}]'
+    '[Breaking: {descriptor} {activity} {emotion}]',
+    '[Live: {descriptor} {activity} — {emotion}]'
   ],
   
   // Status updates
@@ -141,7 +243,8 @@ export const CAPTION_TEMPLATES = {
     '[Status: {descriptor} {emotion} from {activity}]',
     '[Update: {activity} {emotion} {descriptor}ly]',
     '[Alert: {descriptor} {activity} {emotion} detected]',
-    '[Notice: {emotion} due to {descriptor} {activity}]'
+    '[Notice: {emotion} due to {descriptor} {activity}]',
+    '[Status Update: {descriptor} {activity} — {emotion}]'
   ]
 };
 
@@ -153,64 +256,16 @@ export const CAPTION_TEMPLATES = {
  * @returns {string} Formatted closed-caption phrase perfectly aligned with wave size
  */
 export const generateCaptionPhrase = (waveSize = 'medium', _demographic = 'universal', _theme = 'lifestyle') => {
-  // CRITICAL: Match action category precisely to wave size for authenticity
-  let actionCategory = 'normal'; // default for medium waves
-  
-  if (waveSize === 'big') {
-    actionCategory = 'dramatic'; // Big waves get dramatic actions
-  } else if (waveSize === 'small') {
-    actionCategory = 'gentle';   // Small waves get gentle actions
-  }
-  // Medium waves keep 'normal' category
-  
-  const actions = WAVE_ACTIONS[actionCategory];
-  if (!actions || actions.length === 0) {
-    console.warn(`No actions found for category: ${actionCategory}, falling back to normal`);
-    const fallbackActions = WAVE_ACTIONS.normal;
-    const waveAction = fallbackActions[Math.floor(Math.random() * fallbackActions.length)];
-    return `[${waveAction}]`;
-  }
-  
-  const waveAction = actions[Math.floor(Math.random() * actions.length)];
-  
-  // Validate that the action makes sense for the wave size
-  const isAppropriate = validateActionForWaveSize(waveAction, waveSize);
-  if (!isAppropriate) {
-    console.warn(`Action "${waveAction}" may not match wave size "${waveSize}"`);
-  }
-  
-  // Return properly formatted closed-caption style
-  return `[${waveAction}]`;
-};
-
-/**
- * Validate that a wave action description matches the wave size
- * @param {string} action - The wave action description
- * @param {string} waveSize - The wave size category
- * @returns {boolean} Whether the action is appropriate for the wave size
- */
-const validateActionForWaveSize = (action, waveSize) => {
-  const lowerAction = action.toLowerCase();
-  
-  // Big wave validation - should contain power words
-  if (waveSize === 'big') {
-    const powerWords = ['massive', 'towering', 'gigantic', 'enormous', 'colossal', 'epic', 'legendary', 'thundering', 'powerful', 'overwhelming'];
-    return powerWords.some(word => lowerAction.includes(word));
-  }
-  
-  // Small wave validation - should contain gentle/tired words
-  if (waveSize === 'small') {
-    const gentleWords = ['tiny', 'exhausted', 'sleepy', 'gentle', 'minimal', 'tired', 'barely', 'depleted', 'sluggish', 'weak'];
-    return gentleWords.some(word => lowerAction.includes(word));
-  }
-  
-  // Medium waves - should contain moderate/professional words
-  if (waveSize === 'medium') {
-    const moderateWords = ['steady', 'consistent', 'moderate', 'regular', 'standard', 'typical', 'routine', 'average', 'normal', 'reliable'];
-    return moderateWords.some(word => lowerAction.includes(word));
-  }
-  
-  return true; // Default to valid if we can't determine
+  // Try composable generation first
+  try {
+    return composeAction({ waveSize, persona: _demographic, theme: _theme });
+  } catch {
+     // Fallback to legacy behavior (random full action)
+     const actionCategory = waveSize === 'big' ? 'dramatic' : waveSize === 'small' ? 'gentle' : 'normal';
+     const actions = WAVE_ACTIONS[actionCategory] || WAVE_ACTIONS.normal;
+     const legacy = actions[Math.floor(Math.random() * actions.length)];
+     return `[${legacy}]`;
+   }
 };
 
 /**
@@ -250,11 +305,11 @@ export const getPhraseQualityStats = () => {
       fallbackProtection: true,
       authenticityScore: 95 // High score due to wave-size matching
     },
-    recommendations: {
-      dailyGeneration: Math.min(stats.byCategory.bigWaves + stats.byCategory.smallWaves + stats.byCategory.mediumWaves, 100),
-      maxMonthlyUse: stats.monthlyCapacity,
-      qualityThreshold: 'High - phrases match wave intensity'
-    }
+    recommendations: [
+      { key: 'dailyGeneration', value: Math.min(stats.byCategory.bigWaves + stats.byCategory.smallWaves + stats.byCategory.mediumWaves, 100) },
+      { key: 'maxMonthlyUse', value: stats.monthlyCapacity },
+      { key: 'qualityThreshold', value: 'High - phrases match wave intensity' }
+    ]
   };
 };
 

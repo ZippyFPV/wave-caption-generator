@@ -54,7 +54,8 @@ const useWorkflowStore = create(
         currentActive: state.processedImages.length,
         approved: state.approvedImages.length,
         deleted: state.deletedImages.length,
-        created: state.createdProducts.length
+        created: state.createdProducts.length,
+        queuedForQA: state.qaQueue ? state.qaQueue.length : 0
       };
     },
 
@@ -86,6 +87,9 @@ const useWorkflowStore = create(
     bulkDeleteDialog: false,
     bulkDeleteLoading: false,
     confirmPhrase: '',
+    // QA / Validation queue for manual review
+    qaQueue: [],
+    qaThreshold: 0.85,
 
     // ===================
     // SYSTEM STATE
@@ -129,9 +133,11 @@ const useWorkflowStore = create(
     clearSelectedImages: () => set({ selectedImages: [] }),
 
     setApprovedImages: (images) => set({ approvedImages: images }),
-    addApprovedImage: (image) => set(state => ({
-      approvedImages: [...state.approvedImages, image]
-    })),
+    addApprovedImage: (image) => set(state => {
+      const newApproved = [...state.approvedImages, image];
+      try { localStorage.setItem('wavecommerce_approvedImages', JSON.stringify(newApproved)); } catch (err) { console.debug('Failed to persist approvedImages', err); }
+      return { approvedImages: newApproved };
+    }),
     
     setDeletedImages: (images) => set({ deletedImages: images }),
     addDeletedImage: (imageId) => set(state => ({
@@ -183,6 +189,35 @@ const useWorkflowStore = create(
     setBulkDeleteDialog: (show) => set({ bulkDeleteDialog: show }),
     setBulkDeleteLoading: (loading) => set({ bulkDeleteLoading: loading }),
     setConfirmPhrase: (phrase) => set({ confirmPhrase: phrase }),
+
+    // QA actions
+    setQAQueue: (queue) => set({ qaQueue: queue }),
+    addToQAQueue: (item) => set(state => {
+      const newQueue = [...state.qaQueue, item];
+      try { localStorage.setItem('wavecommerce_qaQueue', JSON.stringify(newQueue)); } catch (err) { console.debug('Failed to persist qaQueue', err); }
+      return { qaQueue: newQueue };
+    }),
+    clearQAQueue: () => set(() => {
+      try { localStorage.removeItem('wavecommerce_qaQueue'); } catch (err) { console.debug('Failed to clear qaQueue', err); }
+      return { qaQueue: [] };
+    }),
+    setQAThreshold: (value) => set({ qaThreshold: value }),
+    removeFromQAQueue: (imageId) => set(state => {
+      const newQueue = state.qaQueue.filter(item => item.imageId !== imageId);
+      try { localStorage.setItem('wavecommerce_qaQueue', JSON.stringify(newQueue)); } catch (err) { console.debug('Failed to persist qaQueue', err); }
+      return { qaQueue: newQueue };
+    }),
+    approveQAItem: (imageId) => set(state => {
+      const item = state.qaQueue.find(q => q.imageId === imageId);
+      if (!item) return {};
+      const newQueue = state.qaQueue.filter(q => q.imageId !== imageId);
+      const newApproved = [...state.approvedImages, item.processedImage];
+      try { localStorage.setItem('wavecommerce_qaQueue', JSON.stringify(newQueue)); localStorage.setItem('wavecommerce_approvedImages', JSON.stringify(newApproved)); } catch (err) { console.debug('Failed to persist QA changes', err); }
+      return {
+        qaQueue: newQueue,
+        approvedImages: newApproved
+      };
+    }),
 
     // ===================
     // SYSTEM ACTIONS
@@ -251,6 +286,15 @@ const useWorkflowStore = create(
       // This could load cached images, restore session state, etc.
       console.log('🏪 Workflow store initialized');
       get().updatePersistentMetrics();
+      // Load persisted QA queue and approved images if present
+      try {
+        const persistedQA = localStorage.getItem('wavecommerce_qaQueue');
+        if (persistedQA) set({ qaQueue: JSON.parse(persistedQA) });
+      } catch (err) { console.debug('Failed to load persisted qaQueue', err); }
+      try {
+        const persistedApproved = localStorage.getItem('wavecommerce_approvedImages');
+        if (persistedApproved) set({ approvedImages: JSON.parse(persistedApproved) });
+      } catch (err) { console.debug('Failed to load persisted approvedImages', err); }
     }
   }))
 );

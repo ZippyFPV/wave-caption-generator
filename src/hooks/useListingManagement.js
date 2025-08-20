@@ -40,7 +40,7 @@ export const useListingManagement = () => {
         
         // Create filename
         const cleanCaption = image.caption
-          .replace(/[\[\]]/g, '')
+          .split('[').join('').split(']').join('')
           .toLowerCase()
           .replace(/[^a-z0-9\s]/g, '')
           .replace(/\s+/g, '-')
